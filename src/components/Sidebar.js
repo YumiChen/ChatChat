@@ -21,7 +21,9 @@ const Sidebar = (props) => {
     <MenuItem primaryText="Share" leftIcon={<PersonAdd />} />
     <MenuItem primaryText="Get links" leftIcon={<ContentLink />} />
     <Divider />
-    <MenuItem primaryText="Make a copy" leftIcon={<ContentCopy />} />
+    <MenuItem primaryText="Add new chatroom" leftIcon={<ContentCopy />} 
+      onClick={props.toggleAddRoom}/>
+      <MenuItem primaryText="Profile" leftIcon={<PersonAdd />} />
   </Drawer>
 
     </div>

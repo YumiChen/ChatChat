@@ -23,10 +23,12 @@ class Log extends React.Component{
         // Get DOM
         var message = document.getElementById('msg');
         if (message.value === "") return;
+        
         // send data to server
         socket.emit('chat', {
             message: message.value
         });
+        // save message to log
 
         message.value = "";
     }

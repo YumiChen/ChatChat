@@ -12,16 +12,17 @@ class Nav extends React.Component{
         super(props);
     }
     render(){
-        const settingsMenu = (    
+        const options = ["Members","Invitation code","Sign out"];
+        const menuItems= options.map((option,index)=>{
+            return (<MenuItem primaryText={option} onClick={()=>{this.props.toggleRoomSettings(index)}} key={index}/>);
+        }),
+        settingsMenu = (    
             <IconMenu
             iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
             anchorOrigin={{horizontal: 'left', vertical: 'top'}}
             targetOrigin={{horizontal: 'left', vertical: 'top'}}
             >
-            <MenuItem primaryText="Members" />
-            <MenuItem primaryText="Invitation code" />
-            <MenuItem primaryText="Settings" />
-            <MenuItem primaryText="Sign out" />
+            {menuItems}
           </IconMenu>);
         return (
                 <AppBar
