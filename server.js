@@ -6,6 +6,12 @@ var BodyParser = require( 'body-parser' );
 var router = require("./js/routes");
 
 var path = require('path');
+var webpack = require('webpack');
+var config = require('./webpack.config');
+var compiler = webpack(config);
+
+var webpackDevMiddleware = require("webpack-dev-middleware");
+var webpackHotMiddleware = require("webpack-hot-middleware");
 
 //set test data
 var users = {
@@ -41,7 +47,7 @@ Passport.use( 'local', localStrategy );
 
 // App setup
 var app = express(),
-    port = process.env.port || 8000;
+    port = process.env.port || 7000;
 var server = app.listen(port, function(){
     console.log('listening for requests on port ' + port);
 });
@@ -58,13 +64,24 @@ app.use( Passport.initialize() );
 
 app.use("/",router);
 
-app.post(
-  '/login',
-  Passport.authenticate( 'local', { session: false } ),
-  function( req, res ) {
-    res.send( 'User ID ' + req.user.id );
-  }
-);
+
+// set hot-reload
+app.use(webpackDevMiddleware(compiler, {
+  hot: true,
+  filename: 'bundle.js',
+  publicPath: config[0].output.publicPath,
+  stats: {
+    colors: true,
+  },
+  historyApiFallback: true,
+}));
+
+app.use(webpackHotMiddleware(compiler, {
+  log: console.log,
+  path: '/__webpack_hmr',
+  heartbeat: 10 * 1000,
+}));
+
 
 // Socket setup & event emitter setup
 var io = socket(server);

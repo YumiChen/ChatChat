@@ -1,3 +1,5 @@
+// currentRoom, currentUser
+
 import React from 'react';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import FontIcon from 'material-ui/FontIcon';
@@ -15,6 +17,29 @@ import RaisedButton from 'material-ui/RaisedButton';
 class RoomSettings extends React.Component{
     constructor(props){
       super(props);
+      this.signOut = this.signOut.bind(this);
+    }
+    signOut(){
+      this.props.setUser("LOGOUT");
+    }
+    copy(){
+
+    }
+    leaveRoom(){
+      const currentRoom = this.props.currentRoom,
+            currentUser = this.props.currentUser;
+      fetch("user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name)
+      .then((data)=>{
+        return data.json();
+      }).then(({succes})=>{
+        if(!success) {
+          // handle error
+        }
+      });
+      // splice current room
+      this.props.handleRoom(this.props.currentRoom._id,this.props.currentRoom.name);
+      // set current room to null
+      this.props.changeRoom(null);
     }
     render(){
       const style = {margin: 5};
@@ -42,34 +67,9 @@ class RoomSettings extends React.Component{
           label="Member"
         >
           <List>
-          <ListItem
-            disabled={true}
-            leftAvatar={
-              <Avatar src="images/uxceo-128.jpg" />
-            }
-          >
-            Image Avatar
-          </ListItem>
-          <ListItem
-            disabled={true}
-            leftAvatar={
-              <Avatar
-                src="images/uxceo-128.jpg"
-                size={30}
-                style={style}
-              />
-            }
-          >
-            Image Avatar with custom size
-          </ListItem>
-          <ListItem
-            disabled={true}
-            leftAvatar={
-              <Avatar icon={<FontIcon className="muidocs-icon-communication-voicemail" />} />
-            }
-          >
-            FontIcon Avatar
-          </ListItem>
+            {this.props.currentRoom.members.map((member)=>{
+              return (<ListItem primaryText={member.name}/>);
+            })}
         </List>
         <RaisedButton label="Leave Room" style={style} secondary={true}/>    
         </Tab>
@@ -77,19 +77,41 @@ class RoomSettings extends React.Component{
           icon={<MapsPersonPin />}
           label="Code"
         >
-        <input type="text" value="1231321231" readOnly/>
+        <input type="text" value={this.props.currentRoom._id} readOnly/>
         <RaisedButton label="COPY" style={style} primary={true}/>       
         </Tab>
         <Tab
         icon={<MapsPersonPin />}
         label="Signout"
         >
-        <RaisedButton label="Signout" style={style} secondary={true}/>      
+        <RaisedButton label="Signout" style={style} secondary={true} onClick={this.signOut}/>      
         </Tab>
       </Tabs>
       </Dialog>
     );
     }
 }
+
+import handleRoom from "../dispatchers/handleRooms";
+import currentRoom from "../dispatchers/currentRoom";
+import setUser from "../dispatchers/setUser";
+import {bindActionCreators} from "redux";
+import {connect} from "react-redux";
+
+const mapStateToProps=(state)=>{
+    return {currentUser: state.currentUser,
+            currentRoom: state.currentRoom
+           };
+  }
+  const mapDispatchToProps = (dispatch)=>{
+    return bindActionCreators({
+      handleRoom: handleRoom,
+      changeRoom: currentRoom,
+      setUser: setUser
+    },dispatch);
+  }
+
+RoomSettings = connect(mapStateToProps,mapDispatchToProps)(RoomSettings);
+
 
 module.exports = RoomSettings;

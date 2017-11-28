@@ -1,3 +1,6 @@
+// dispatcher: rooms
+// state: currentUser
+
 import React from 'react';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -27,13 +30,22 @@ class Nav extends React.Component{
         return (
                 <AppBar
                     title="ChatChat"
-                    iconClassNameRight="muidocs-icon-navigation-expand-more"
-                    iconElementRight={settingsMenu}
-                    onLeftIconButtonTouchTap={this.props.toggleNav}
+                    iconClassNameRight={this.props.currentRoom?"muidocs-icon-navigation-expand-more":null}
+                    iconElementRight={this.props.currentRoom?settingsMenu:null}
+                    onLeftIconButtonTouchTap={this.props.currentUser?this.props.toggleNav:null}
                 />
         );
     }
 }
 
+import {connect} from "react-redux";
+
+const mapStateToProps=(state)=>{
+    return {currentUser: state.currentUser,
+            currentRoom: state.currentRoom};
+  }
+
+
+Nav = connect(mapStateToProps,null)(Nav);
 
 export default Nav;

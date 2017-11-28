@@ -1,3 +1,5 @@
+// dispatcher: currentUser, currentRoom
+
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -19,7 +21,7 @@ class AddRoom extends React.Component{
             label="創建"
             primary={true}
             keyboardFocused={true}
-            onClick={this.props.toggleAddRoom}
+            onClick={this.props.createRoom}
             />
         ];
     return (
@@ -33,13 +35,30 @@ class AddRoom extends React.Component{
         <TextField
         hintText="輸入您喜歡的名稱..."
         floatingLabelText="Room name"
-        /><br />
-        <TextField
-        hintText="輸入進入房間的通關密碼..."
-        floatingLabelText="Password"
-        /><br />
+        />
+        <p>創建房間後將自動產生邀請碼</p>
       </Dialog>);
     }
 };
+
+import handleRoom from "../dispatchers/handleRooms";
+import currentRoom from "../dispatchers/currentRoom";
+import setUser from "../dispatchers/setUser";
+import {bindActionCreators} from "redux";
+import {connect} from "react-redux";
+
+const mapStateToProps=(state)=>{
+    return {currentUser: state.currentUser,
+            currentRoom: state.currentRoom
+           };
+  }
+  const mapDispatchToProps = (dispatch)=>{
+    return bindActionCreators({
+      handleRoom: handleRoom,
+      changeRoom: currentRoom
+    },dispatch);
+  }
+
+AddRoom = connect(mapStateToProps,mapDispatchToProps)(AddRoom);
 
 module.exports = AddRoom;

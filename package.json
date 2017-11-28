@@ -1,14 +1,14 @@
 {
-  "name": "paintChat",
+  "name": "ChatChat",
   "version": "1.0.0",
   "description": "A chat app using WebSockets",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clientdev": "webpack-dev-server --devtool eval --progress --colors --hot --content-base build",
-    "serverdev": "nodemon index.js",
+    "serverdev": "nodemon server.js",
     "build": "webpack -p",
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -23,16 +23,12 @@
   "dependencies": {
     "express": "^4.15.2",
     "material-ui": "^0.19.4",
-    "mongodb": "^2.2.33",
-    "mongoose": "^4.13.5",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-redux": "^5.0.6",
-    "react-router": "^4.1.2",
     "redux": "^3.7.2",
-    "redux-thunk": "^2.2.0",
     "socket.io": "^1.7.3",
     "socket.io-client": "^2.0.4"
   },

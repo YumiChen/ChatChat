@@ -3,13 +3,11 @@ const path = require('path');
 const autoprefixer = require("autoprefixer");
 
 module.exports = [{
-  entry: {
-    app:     
-      [
-        'eventsource-polyfill',
-        './src/index'
-      ]
-  },
+  entry: [
+    'eventsource-polyfill',
+    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
+    './src/index'
+  ],
   output: {
     path: path.join(__dirname, '/public'),
     filename: 'bundle.js'
@@ -59,6 +57,11 @@ module.exports = [{
   },
   plugins: [
     new webpack.NamedModulesPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoErrorsPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.ProvidePlugin({
+      React: 'react',
+      ReactDOM:'react-dom'
+    })
   ]
 }];

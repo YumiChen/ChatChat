@@ -1,3 +1,6 @@
+// state: currentUser
+// dispatcher: currentRoom
+
 import React from 'react';
 import {List, ListItem} from 'material-ui/List';
 import RemoveRedEye from 'material-ui/svg-icons/image/remove-red-eye';
@@ -8,25 +11,59 @@ import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 
-const Sidebar = (props) => {
-  return (
-    <div className="sidebar">
-    <Drawer
-    docked={false}
-    width={200}
-    open={props.open}
-    onRequestChange={props.toggleNav}
-    >
-    <MenuItem primaryText="Preview" leftIcon={<RemoveRedEye />} />
-    <MenuItem primaryText="Share" leftIcon={<PersonAdd />} />
-    <MenuItem primaryText="Get links" leftIcon={<ContentLink />} />
-    <Divider />
-    <MenuItem primaryText="Add new chatroom" leftIcon={<ContentCopy />} 
-      onClick={props.toggleAddRoom}/>
-      <MenuItem primaryText="Profile" leftIcon={<PersonAdd />} />
-  </Drawer>
-
-    </div>
-  )};
+class Sidebar extends React.Component{
+  constructor(props){
+    super(props);
+    this.changeRoom = this.changeRoom.bind(this);
+  }
+  changeRoom(event){
+    const id = event.target.value;
+    this.props.changeRoom(id);
+  }
+  render(){
+    const props = this.props;
+    return (
+      <div className="sidebar">
+      <Drawer
+      docked={false}
+      width={200}
+      open={props.open}
+      onRequestChange={props.toggleNav}
+      >
+      {this.props.currentUser.rooms.map((room)=>{
+        return (<MenuItem primaryText={room.name} value={room.id} onClick={this.changeRoom}/>);
+      })}
+      <Divider />
+      <MenuItem primaryText="Add new chatroom" leftIcon={<ContentCopy />} 
+        onClick={props.toggleAddRoom}/>
+        <MenuItem primaryText="Enter new room" leftIcon={<PersonAdd />} />
+    </Drawer>
   
+      </div>
+    )
+  }
+};
+  
+  import handleRoom from "../dispatchers/handleRooms";
+  import currentRoom from "../dispatchers/currentRoom";
+  import setUser from "../dispatchers/setUser";
+  import {bindActionCreators} from "redux";
+  import {connect} from "react-redux";
+  
+  const mapStateToProps=(state)=>{
+      return {currentUser: state.currentUser,
+              currentRoom: state.currentRoom
+             };
+    }
+    const mapDispatchToProps = (dispatch)=>{
+      return bindActionCreators({
+        handleRoom: handleRoom,
+        changeRoom: currentRoom,
+        setUser: setUser
+      },dispatch);
+    }
+  
+  Sidebar = connect(mapStateToProps,mapDispatchToProps)(Sidebar);
+  
+
   export default Sidebar;
