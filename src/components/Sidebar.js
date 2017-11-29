@@ -5,38 +5,56 @@ import React from 'react';
 import {List, ListItem} from 'material-ui/List';
 import RemoveRedEye from 'material-ui/svg-icons/image/remove-red-eye';
 import PersonAdd from 'material-ui/svg-icons/social/person-add';
-import ContentLink from 'material-ui/svg-icons/content/link';
+import Edit from 'material-ui/svg-icons/editor/mode-edit';
+import Forward from 'material-ui/svg-icons/content/forward';
 import Divider from 'material-ui/Divider';
-import ContentCopy from 'material-ui/svg-icons/content/content-copy';
+import Add from 'material-ui/svg-icons/content/add';
 import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
+import Menu from 'material-ui/Menu';
 
 class Sidebar extends React.Component{
   constructor(props){
     super(props);
+    this.state = { selectedItem: 1231321};
     this.changeRoom = this.changeRoom.bind(this);
   }
-  changeRoom(event){
-    const id = event.target.value;
-    this.props.changeRoom(id);
+  changeRoom(event, value){
+    const that = this;
+    this.setState({
+      selectedItem :value
+   }, () => {
+      that.props.changeRoom(value);
+      that.props.toggleNav();
+    }); 
   }
   render(){
     const props = this.props;
     return (
       <div className="sidebar">
       <Drawer
-      docked={false}
-      width={200}
-      open={props.open}
-      onRequestChange={props.toggleNav}
+        docked={false}
+        width={200}
+        open={props.open}
+        onRequestChange={props.toggleNav}
+        style={{overflow: "hidden"}}
+        containerStyle={{overflow: "hidden"}}
+        docked={false}
       >
-      {this.props.currentUser.rooms.map((room)=>{
-        return (<MenuItem primaryText={room.name} value={room.id} onClick={this.changeRoom}/>);
+      <Menu value= { this.state.selectedItem } onChange={this.changeRoom}>
+      {this.props.currentUser.rooms.map((room,index)=>{
+        return (<MenuItem primaryText={room.name} value={room._id} key={index}/>);
       })}
-      <Divider />
-      <MenuItem primaryText="Add new chatroom" leftIcon={<ContentCopy />} 
+      {this.props.currentUser.rooms.length>0 && <Divider />}
+      <MenuItem primaryText="創建聊天室" leftIcon={<Add />} 
         onClick={props.toggleAddRoom}/>
-        <MenuItem primaryText="Enter new room" leftIcon={<PersonAdd />} />
+        <MenuItem primaryText="進入新聊天室" leftIcon={<PersonAdd />} 
+        onClick={props.toggleEnterRoom}/>
+        <MenuItem primaryText="修改個人資料" leftIcon={<Edit />} 
+        onClick={props.toggleUserSettings}/>        
+        <MenuItem primaryText="登出帳號" leftIcon={<Forward />} 
+        onClick={props.signOut}/>        
+      </Menu>
     </Drawer>
   
       </div>

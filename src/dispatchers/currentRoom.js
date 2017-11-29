@@ -11,7 +11,6 @@ module.exports = (_id)=>{
         .then((data)=>{
             return data.json();
         }).then((data)=>{
-            console.log(data);
             dispatch({
             type: "CHANGEROOM",
             payload: data.result

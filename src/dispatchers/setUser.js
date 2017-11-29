@@ -1,6 +1,5 @@
 const setUser = (type,data)=>{
-    console.log(data);
-    if(type == "LOGIN"){
+    if(type == "LOGIN" || type == "RESET"){
         return {
             type: "LOGIN",
             payload: data

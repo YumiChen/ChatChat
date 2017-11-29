@@ -17,39 +17,23 @@ import RaisedButton from 'material-ui/RaisedButton';
 class RoomSettings extends React.Component{
     constructor(props){
       super(props);
-      this.signOut = this.signOut.bind(this);
-    }
-    signOut(){
-      this.props.setUser("LOGOUT");
-    }
-    copy(){
+      this.copy = this.copy.bind(this);
 
     }
-    leaveRoom(){
-      const currentRoom = this.props.currentRoom,
-            currentUser = this.props.currentUser;
-      fetch("user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name)
-      .then((data)=>{
-        return data.json();
-      }).then(({succes})=>{
-        if(!success) {
-          // handle error
-        }
-      });
-      // splice current room
-      this.props.handleRoom(this.props.currentRoom._id,this.props.currentRoom.name);
-      // set current room to null
-      this.props.changeRoom(null);
+    copy(){
+      let copyArea = this.password; 
+      copyArea.select();
+      document.execCommand("Copy"); 
     }
     render(){
       const style = {margin: 5};
       const props = this.props,
             actions = [
               <FlatButton
-              label="取消"
+              label="關閉"
               primary={true}
               keyboardFocused={true}
-              onClick={props.toggleRoomSettings}
+              onClick={props.toggle}
               />
           ];  
 
@@ -58,33 +42,33 @@ class RoomSettings extends React.Component{
             modal={false}
             actions={actions}
             open={props.open}
-            onRequestClose={props.toggleRoomSettings}
+            onRequestClose={props.toggle}
             bodyStyle={{padding:0}}
         >
         <Tabs initialSelectedIndex={props.initialSelectedIndex}>
         <Tab
-        icon={<MapsPersonPin />}
-          label="Member"
+          label="聊天室成員"
         >
           <List>
-            {this.props.currentRoom.members.map((member)=>{
-              return (<ListItem primaryText={member.name}/>);
+            {this.props.currentRoom.members.map((member,index)=>{
+              return (<ListItem primaryText={member.name} key={index}/>);
             })}
-        </List>
-        <RaisedButton label="Leave Room" style={style} secondary={true}/>    
+        </List>   
         </Tab>
         <Tab
-          icon={<MapsPersonPin />}
-          label="Code"
+          label="邀請碼"
         >
-        <input type="text" value={this.props.currentRoom._id} readOnly/>
-        <RaisedButton label="COPY" style={style} primary={true}/>       
-        </Tab>
-        <Tab
-        icon={<MapsPersonPin />}
-        label="Signout"
-        >
-        <RaisedButton label="Signout" style={style} secondary={true} onClick={this.signOut}/>      
+        <div style={{textAlign: "center"}}>
+          <p>請將房間邀請碼分享給您想邀請的朋友</p>
+          <input 
+            ref={ password=>this.password=password }
+            value = {this.props.currentRoom._id}
+            className = "showRoomPassword"
+            readOnly
+          />
+          <br/>
+          <RaisedButton label="COPY" style={style} primary={true} onClick={this.copy}/>     
+        </div>  
         </Tab>
       </Tabs>
       </Dialog>

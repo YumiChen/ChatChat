@@ -17,9 +17,9 @@ class Log extends React.Component{
     componentDidMount(){
         var output = document.getElementById('output'), that = this;
         socket.on('chat', function(data){
-            console.log(data);
             // output.innerHTML += '<p class="msg">' + data.message + '</p>';
             that.props.addLog(data);
+            console.log("socket received data");
         });
     }
     sendMsg(event){
@@ -38,7 +38,8 @@ class Log extends React.Component{
             msg: message.value
         });
         // save message to log
-        const api = "room/addLog?userId="+userId+"&userName="+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
+        const api = "room/addLog?userId="+userId+"&userName="+userName+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
+        console.log(api);
         fetch(encodeURI(api)).then((data)=>{
             return data.json();
         }).then(({success})=>{
@@ -50,18 +51,20 @@ class Log extends React.Component{
         message.value = "";
     }
     render(){
-        console.log(this.props.currentRoom.log);
+        const id = this.props.currentUser._id;
         return (
         <div className="log">
             <div id="output">
-                {this.props.currentRoom.log.map((data)=>{
-                    return (<p className="msg"><small>{data.name}</small><br/>{data.msg}</p>);
+                {this.props.currentRoom.log.map((data,index)=>{
+                    if(data._id == id) return (<p className="ownMsg" key={index}>{data.msg}</p>);
+                    return (<div><small className="msgName">{data.name}</small><p className="msg" key={index}>{data.msg}</p></div>);
                 })}
             </div>
             <div className="log_input">
                 <TextField
                     id = "msg"
                     hintText=""
+                    style={{width: "calc(100vw - 8.5rem)"}}
                 />
                 <RaisedButton label="SEND" primary={true} 
                     onClick={this.sendMsg}

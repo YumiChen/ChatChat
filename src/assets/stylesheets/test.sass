@@ -1,5 +1,10 @@
+$main: #6d4c41
+$sub: #ffab40
+$orange: rgb(255, 194, 96)
+$tomato: rgb(252, 132, 95)
+
 *
-  position: relative
+  font-family: 微軟正黑體
 
 %shadow
   box-shadow: 1px 1px 5px 2px rgba(0,0,0,.1)
@@ -11,20 +16,49 @@ body,html
   overflow: hidden
 
 body
-
+  background-image: url(https://s6.postimg.org/quixdzmrl/grass-1529157_1920.jpg)
+  background-repeat: no-repeat
+  background-size: cover
+h3
+  margin: 1rem
+  font-weight: bold
+  &::after
+    content: ""
+    position: absolute
+    top: 3.7rem
+    width: 90%
+    height: 3px
+    left: 3%
+    border-radius: 10rem
+    background-color: $sub
 
 .mainContainer
   display: inline-flex
   height: calc(100vh - 64px)
 
+.index
+  width: 100vw
+  text-align: center
+
 .sidebar
 
 .log
   width: 100vw
+
 #output
   padding: 1rem
   overflow-y: auto
   height: calc(calc(100vh - 64px) - 8rem)
+  position: relative
+  font-family: 微軟正黑體
+  &::-webkit-scrollbar-track
+    border: 1px solid $main
+    background-color: rgba(255,255,255,.7)
+  &::-webkit-scrollbar
+    width: 6px
+    background-color: rgba(255,255,255,.7)
+  &::-webkit-scrollbar-thumb
+    background-color: $main
 
 .log_input
   height: 4rem
@@ -34,10 +68,59 @@ body
   bottom: 0
   box-shadow: 0px -2px 5px 2px rgba(0,0,0,.1)
   white-space: nowrap
-  
+  background-color: rgba(255,255,255,1)
+
 .msg
-  background-color: orange
-  border-radius: 1em
-  padding: 1em
-  width: 8rem
+  background-color: rgba(255,255,255,.7)
+  border-radius: 1rem
+  padding: .7rem 1rem
+  margin-top: .2rem
+  width: 12rem
   word-wrap: break-word
+.msgName
+  padding: 0 .8rem
+  width: 12rem
+  word-wrap: break-word
+
+.ownMsg
+  background-color: rgba(178, 233, 247,0.7)
+  border-radius: 1em
+  padding: .7rem 1em
+  width: 12rem
+  margin-left: auto
+  word-wrap: break-word
+
+.login
+  width: 100vw
+  text-align: center
+
+.loginTitle
+  &::after
+    height: 0
+
+.showRoomPassword
+  text-align: center
+  width: 60%
+  border-radius: .2rem
+  padding: 0.5rem
+  margin: .5rem 0
+  border: solid 1px $main
+
+.hint
+  margin: 0
+  color: #d30600
+  font-weight: bold
+  font-size: .9rem
+.loginOrSignupHint
+  color: white
+  & span
+    color: $sub
+    cursor: pointer
+
+.mascot
+  width: 15rem
+  height: 20rem
+  margin: auto
+  background-image: url(https://s6.postimg.org/natkrnaip/st01.png)
+  background-repeat: no-repeat
+  background-size: cover

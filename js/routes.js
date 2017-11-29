@@ -1,3 +1,5 @@
+// JWY, Bcrypt, passport
+
 var express = require('express');
 var router = express.Router();
 var fs = require("fs");
@@ -22,6 +24,7 @@ router.get("/user/insert",function(req,res){
         _id: req.query._id,
         name: req.query.name,
         password: req.query.password,
+        avatar: null,
         rooms: [],
         valid: true
       },function(err, resp) {
@@ -66,28 +69,6 @@ router.get("/user/delete",function(req,res){
   });
 });
 
-// query user 
-router.get("/user/query",function(req,res){
-  // only query valid documents
-  req.query.valid = true;
-
-  handleDB(function(db){
-    try{
-      db.collection("user").find(req.query).toArray(function(err, result) {
-        if (err) throw err;
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ success: true, result: result }));
-        db.close();
-      });
-    }
-    catch(err){
-      console.log(err);
-      res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify({ success: false }));
-    }
-  });
-});
-
 
 /* ROOM */
 // create room
@@ -106,6 +87,7 @@ router.get("/room/insert",function(req,res){
         name: name,
         members:[{_id:userId,name:userName}],
         log: [],
+        lastUpdatedDay: null,
         valid: true
       },function(err, resp) {
         // modify user data
@@ -134,50 +116,7 @@ router.get("/room/insert",function(req,res){
 
 });
 
-// delete room
-// param: id
-router.get("/room/delete",function(req,res){
-  handleDB(function(db){
-    try{
-      db.collection("room")
-      .updateOne({_id: req.query._id}, {$set: {valid: false}}, function(err, resp) {
-        if (err) throw err;
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ success: true }));
-        db.close();
-      });
-    }
-    catch(err){
-      console.log(err);
-      res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify({ success: false }));
-    }
-  });
-});
-
-// query room info
-router.get("/room/query",function(req,res){
-  // only query valid documents
-  req.query.valid = true;
-  
-  handleDB(function(db){
-    try{
-      db.collection("room").find(req.query).toArray(function(err, result) {
-        if (err) throw err;
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ success: true, result: result }));
-        db.close();
-      });
-    }
-    catch(err){
-      console.log(err);
-      res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify({ success: false }));
-    }
-  });
-});
-
-// query room info
+// find one room
 router.get("/room/findOne",function(req,res){
   // only query valid documents
   req.query.valid = true;
@@ -232,19 +171,24 @@ router.get("/user/updateName",function(req,res){
 
   handleDB(function(db){
     try{
+      var _id = req.query._id,
+          name = req.query.name;
       db.collection("user")
-      .updateOne({_id: req.query._id}, {$set: {name: req.query.name}}, function(err, resp) {
+      .updateOne({_id: _id}, {$set: {name: name}}, function(err, resp) {
         if (err) throw err;
         db.collection("room")
-        .update({'members._id': req.query._id,}, {$set: {'members.$.name': req.query.name}},{multi: true}, function(err, resp) {
+        .update({'members._id': _id,}, {$set: {'members.$.name': name}},{multi: true}, function(err, resp) {
           if (err) throw err;
           console.log(resp);
           db.collection("room")
-          .update({'log._id': req.query._id,}, {$set: {'log.$.name': req.query.name}},{multi: true}, function(err, resp) {
-            if (err) throw err;
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify({ success: true }));
-            db.close();
+          .update({'log._id': _id,}, {$set: {'log.$.name': name}},{multi: true}, function(err, resp) {
+            db.collection("user")
+            .findOne({_id: _id}, function(err, resp) {
+              if (err) throw err;
+              res.setHeader('Content-Type', 'application/json');
+              res.send(JSON.stringify({ success: true , result: resp}));
+              db.close();
+            });
           });
         });
       });
@@ -273,6 +217,7 @@ router.get("/user/addToRoom",function(req,res){
                 if (err) throw err;
                 db.collection("room").updateOne({_id: ObjectId(password)}, {$addToSet: {members:{_id:userId,name:userName}}}, function(err, resp) {
                   if (err) throw err;
+                  // 順便推播有新成員加入
                   db.collection("room").findOne({_id: ObjectId(password)}, function(err, resp) {
                     if (err) throw err;
                     res.setHeader('Content-Type', 'application/json');
@@ -305,6 +250,7 @@ router.get("/user/leaveRoom",function(req,res){
         db.collection("room").updateOne({_id: ObjectId(roomId)}, {$pull: {members:{_id:userId,name:userName}}}, function(err, resp) {
         if (err) throw err;
           db.collection("user").updateOne({_id: userId}, {$pull: {rooms:{_id:ObjectId(roomId),name:roomName}}}, function(err, resp) {
+            // 順便推播有成員離開
             if (err) throw err;
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify({ success: true }));
@@ -333,7 +279,9 @@ router.get("/user/login",function(req,res){
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify({ success: true , result: user}));
           }else{
-            throw new Error("password or email is incorrect");
+            // THROW ERROR
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ success: false }));
           }
         });
 
