@@ -1,9 +1,7 @@
 var express = require('express');
 var socket = require('socket.io');
-var Passport = require( 'passport' );
-var LocalStrategy = require( 'passport-local' ).Strategy;
 var BodyParser = require( 'body-parser' );
-var router = require("./js/routes");
+var router = require("./server/routes");
 
 var path = require('path');
 var webpack = require('webpack');
@@ -12,37 +10,6 @@ var compiler = webpack(config);
 
 var webpackDevMiddleware = require("webpack-dev-middleware");
 var webpackHotMiddleware = require("webpack-hot-middleware");
-
-//set test data
-var users = {
-  Mio: {
-    username: 'Mio',
-    password: '1234',
-    id: 1,
-  }
-}
-
-// set passport
-var localStrategy = new LocalStrategy({
-      usernameField: 'username',
-      passwordField: 'password',
-    },
-    function(username, password, done) {
-      user = users[ username ];
-
-      if ( user == null ) {
-        return done( null, false, { message: 'Invalid user' } );
-      };
-
-      if ( user.password !== password ) {
-        return done( null, false, { message: 'Invalid password' } );
-      };
-
-      done( null, user );
-    }
-  )
-
-Passport.use( 'local', localStrategy );
 
 
 // App setup
@@ -59,7 +26,6 @@ app.use(express.static('public'));
 
 app.use( BodyParser.urlencoded( { extended: false } ) );
 app.use( BodyParser.json() );
-app.use( Passport.initialize() );
 
 
 app.use("/",router);

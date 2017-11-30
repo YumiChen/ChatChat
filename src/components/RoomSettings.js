@@ -1,5 +1,3 @@
-// currentRoom, currentUser
-
 import React from 'react';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import FontIcon from 'material-ui/FontIcon';
@@ -51,7 +49,9 @@ class RoomSettings extends React.Component{
         >
           <List>
             {this.props.currentRoom.members.map((member,index)=>{
-              return (<ListItem primaryText={member.name} key={index}/>);
+              return (<ListItem primaryText={member.name} 
+                                secondaryText={"@"+member._id}
+                                key={index}/>);
             })}
         </List>   
         </Tab>
@@ -76,26 +76,17 @@ class RoomSettings extends React.Component{
     }
 }
 
-import handleRoom from "../dispatchers/handleRooms";
-import currentRoom from "../dispatchers/currentRoom";
-import setUser from "../dispatchers/setUser";
-import {bindActionCreators} from "redux";
+
 import {connect} from "react-redux";
 
 const mapStateToProps=(state)=>{
-    return {currentUser: state.currentUser,
+    return {
             currentRoom: state.currentRoom
            };
   }
-  const mapDispatchToProps = (dispatch)=>{
-    return bindActionCreators({
-      handleRoom: handleRoom,
-      changeRoom: currentRoom,
-      setUser: setUser
-    },dispatch);
-  }
 
-RoomSettings = connect(mapStateToProps,mapDispatchToProps)(RoomSettings);
+
+RoomSettings = connect(mapStateToProps,null)(RoomSettings);
 
 
 module.exports = RoomSettings;

@@ -1,13 +1,7 @@
-// dispatcher: currentRoom
-// state: currentRoom
-
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import io from 'socket.io-client';
-
-// Make connection
-var socket = io.connect('http://localhost:7000');
+import socket from "../socket";
 
 class Log extends React.Component{
     constructor(props){
@@ -16,11 +10,12 @@ class Log extends React.Component{
     }
     componentDidMount(){
         var output = document.getElementById('output'), that = this;
-        socket.on('chat', function(data){
-            // output.innerHTML += '<p class="msg">' + data.message + '</p>';
-            that.props.addLog(data);
-            console.log("socket received data");
-        });
+        if(!socket._callbacks.$chat){
+            socket.on('chat', function(data){
+                that.props.addLog(data);
+                console.log("socket received data");
+            });
+        }
     }
     sendMsg(event){
         event.preventDefault();
@@ -30,22 +25,31 @@ class Log extends React.Component{
             userId = this.props.currentUser._id,
             userName = this.props.currentUser.name;
         if (message.value === "") return;
-        
-        // send data to server
-        socket.emit('chat', {
+
+        const payload = {
             _id: userId,
             name: userName,
             msg: message.value
-        });
+        };
+
         // save message to log
         const api = "room/addLog?userId="+userId+"&userName="+userName+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
-        console.log(api);
-        fetch(encodeURI(api)).then((data)=>{
+        fetch(encodeURI(api),{
+            method: 'get',
+            headers: {
+              'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/json',
+              auth: sessionStorage.getItem("token")
+            },
+            body: undefined
+          }).then((data)=>{
             return data.json();
         }).then(({success})=>{
             if(!success){
                 // handle error
             }
+            // emit message
+            socket.emit('chat', payload);
         });
 
         message.value = "";
@@ -57,7 +61,7 @@ class Log extends React.Component{
             <div id="output">
                 {this.props.currentRoom.log.map((data,index)=>{
                     if(data._id == id) return (<p className="ownMsg" key={index}>{data.msg}</p>);
-                    return (<div><small className="msgName">{data.name}</small><p className="msg" key={index}>{data.msg}</p></div>);
+                    return (<div key={index}><small className="msgName">{data.name}</small><p className="msg" key={index}>{data.msg}</p></div>);
                 })}
             </div>
             <div className="log_input">
@@ -74,9 +78,6 @@ class Log extends React.Component{
     }
   };
 
-  import handleRoom from "../dispatchers/handleRooms";
-  import currentRoom from "../dispatchers/currentRoom";
-  import setUser from "../dispatchers/setUser";
   import addLog from "../dispatchers/addLog";
   import {bindActionCreators} from "redux";
   import {connect} from "react-redux";
@@ -88,9 +89,6 @@ class Log extends React.Component{
     }
     const mapDispatchToProps = (dispatch)=>{
       return bindActionCreators({
-        handleRoom: handleRoom,
-        changeRoom: currentRoom,
-        setUser: setUser,
         addLog: addLog
       },dispatch);
     }

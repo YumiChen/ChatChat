@@ -1,6 +1,3 @@
-// dispatcher: rooms
-// state: currentUser
-
 import React from 'react';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
@@ -10,12 +7,20 @@ import MenuIcon from 'material-ui/svg-icons/navigation/menu';
 import TextSMSIcon from 'material-ui/svg-icons/communication/textsms';
 import AppBar from 'material-ui/AppBar';
 import Sidebar from "./Sidebar";
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 
 class Nav extends React.Component{
     constructor(props){
         super(props);
+        this.state = { showLeaveRoom: false};
+        
+        this.toggleLeaveRoom = this.toggleLeaveRoom.bind(this);
         this.toIndex = this.toIndex.bind(this);
         this.leaveRoom = this.leaveRoom.bind(this);
+    }
+    toggleLeaveRoom(){
+        this.setState({ showLeaveRoom: !this.state.showLeaveRoom});
     }
     toIndex(){
         if(this.props.currentRoom!=null) this.props.changeRoom(null);
@@ -24,8 +29,15 @@ class Nav extends React.Component{
         const currentRoom = this.props.currentRoom,
               currentUser = this.props.currentUser,
               api = "user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name;
-        console.log(api);
-        fetch(encodeURI(api))
+        fetch(encodeURI(api,{
+            method: 'get',
+            headers: {
+              'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/json',
+              auth: sessionStorage.getItem("token")
+            },
+            body: undefined
+          }))
         .then((data)=>{
           return data.json();
         }).then(({success})=>{
@@ -50,11 +62,26 @@ class Nav extends React.Component{
             targetOrigin={{horizontal: 'left', vertical: 'top'}}
             >
             {menuItems}
-            <MenuItem primaryText="離開房間" onClick={this.leaveRoom}/>
+            <MenuItem primaryText="離開房間" onClick={this.toggleLeaveRoom}/>
           </IconMenu>),
           leftIcon_loggedIn = (<IconButton iconStyle={{fill:"#6d4c41",color:"#6d4c41"}}><MenuIcon fill="#6d4c41"/></IconButton>),
-          leftIcon = (<IconButton iconStyle={{fill:"#6d4c41",color:"#6d4c41"}}><TextSMSIcon fill="#6d4c41"/></IconButton>);
+          leftIcon = (<IconButton iconStyle={{fill:"#6d4c41",color:"#6d4c41"}}><TextSMSIcon fill="#6d4c41"/></IconButton>),
+          actions = [
+            <FlatButton
+            label="取消"
+            primary={true}
+            keyboardFocused={true}
+            onClick={this.toggleLeaveRoom}
+            />,
+            <FlatButton
+            label="確定"
+            primary={true}
+            keyboardFocused={true}
+            onClick={this.leaveRoom}
+            />
+        ];
         return (
+                <div>
                 <AppBar
                     title={<span style={{cursor: "pointer"}}>ChatChat</span>}
                     onTitleTouchTap={this.toIndex}
@@ -64,6 +91,17 @@ class Nav extends React.Component{
                     style = {{backgroundColor: "none", boxShadow: "none", color: "#6d4c41"}}
                     titleStyle = {{color: "#6d4c41", fontWeight: "bold"}}
                 />
+                <Dialog
+                titleClassName="noUnderline"
+                titleStyle={{textAlign: "center"}}
+                actionsContainerStyle={{textAlign: "center"}}
+                actions={actions}
+                modal={false}
+                open={this.state.showLeaveRoom}
+                onRequestClose={this.toggleLeaveRoom}
+                titleStyle={{padding: "18px 20px", fontWeight: "bold"}}
+                />
+                </div>
         );
     }
 }

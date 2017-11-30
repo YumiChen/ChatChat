@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import App from "./components/App";
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Provider} from "react-redux";
-import store from "./components/store";
+import store from "./store";
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import baseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import * as Colors from 'material-ui/styles/colors';

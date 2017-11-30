@@ -18,15 +18,17 @@ class Sidebar extends React.Component{
     super(props);
     this.state = { selectedItem: 1231321};
     this.changeRoom = this.changeRoom.bind(this);
+    this.signOut = this.signOut.bind(this);
   }
-  changeRoom(event, value){
-    const that = this;
-    this.setState({
-      selectedItem :value
-   }, () => {
-      that.props.changeRoom(value);
-      that.props.toggleNav();
-    }); 
+  changeRoom(event, obj, index){
+      if(!obj.props.value) return;
+      this.props.changeRoom(obj.props.value);
+      this.props.toggle();
+  }
+  signOut(){
+    this.props.setUser("LOGOUT");
+    this.props.changeRoom(null);
+    this.props.toggle();
   }
   render(){
     const props = this.props;
@@ -36,14 +38,16 @@ class Sidebar extends React.Component{
         docked={false}
         width={200}
         open={props.open}
-        onRequestChange={props.toggleNav}
+        onRequestChange={props.toggle}
         style={{overflow: "hidden"}}
         containerStyle={{overflow: "hidden"}}
         docked={false}
       >
-      <Menu value= { this.state.selectedItem } onChange={this.changeRoom}>
+      <Menu value= { this.state.selectedItem } onItemTouchTap={this.changeRoom}>
       {this.props.currentUser.rooms.map((room,index)=>{
-        return (<MenuItem primaryText={room.name} value={room._id} key={index}/>);
+        return (<MenuItem primaryText={room.name} value={room._id} key={index} 
+                  style={props.currentRoom?( props.currentRoom._id == room._id?{color:"brown"}:null):null}  
+                />);
       })}
       {this.props.currentUser.rooms.length>0 && <Divider />}
       <MenuItem primaryText="創建聊天室" leftIcon={<Add />} 
@@ -53,7 +57,7 @@ class Sidebar extends React.Component{
         <MenuItem primaryText="修改個人資料" leftIcon={<Edit />} 
         onClick={props.toggleUserSettings}/>        
         <MenuItem primaryText="登出帳號" leftIcon={<Forward />} 
-        onClick={props.signOut}/>        
+        onClick={this.signOut}/>        
       </Menu>
     </Drawer>
   
@@ -62,7 +66,6 @@ class Sidebar extends React.Component{
   }
 };
   
-  import handleRoom from "../dispatchers/handleRooms";
   import currentRoom from "../dispatchers/currentRoom";
   import setUser from "../dispatchers/setUser";
   import {bindActionCreators} from "redux";
@@ -75,7 +78,6 @@ class Sidebar extends React.Component{
     }
     const mapDispatchToProps = (dispatch)=>{
       return bindActionCreators({
-        handleRoom: handleRoom,
         changeRoom: currentRoom,
         setUser: setUser
       },dispatch);

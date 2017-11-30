@@ -6,8 +6,14 @@ module.exports = (_id)=>{
     // fetch to get room data
     return (dispatch)=>{
         const api = "room/findOne?_id="+_id;
-        console.log(api);
-        fetch(api)
+        fetch(api,{
+            method: 'get',
+            headers: {
+              'Accept': 'application/json, text/plain, */*',
+              'Content-Type': 'application/json'
+            },
+            body: undefined
+        })
         .then((data)=>{
             return data.json();
         }).then((data)=>{
