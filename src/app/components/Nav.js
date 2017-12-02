@@ -28,27 +28,32 @@ class Nav extends React.Component{
     leaveRoom(){
         const currentRoom = this.props.currentRoom,
               currentUser = this.props.currentUser,
-              api = "user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name;
-        fetch(encodeURI(api,{
+              api = "a/user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name;
+        debug("JWT "+sessionStorage.getItem("token"));
+        fetch(encodeURI(api),{
             method: 'get',
             headers: {
               'Accept': 'application/json, text/plain, */*',
               'Content-Type': 'application/json',
-              auth: sessionStorage.getItem("token")
+              Authorization: "JWT "+sessionStorage.getItem("token")
             },
             body: undefined
-          }))
+          })
         .then((data)=>{
           return data.json();
         }).then(({success})=>{
           if(!success) {
             // handle error
+
+          }else{
+            this.toggleLeaveRoom();
+            // splice current room
+            this.props.handleRoom("LEAVEROOM",this.props.currentRoom._id,this.props.currentRoom.name);
+            // set current room to null
+            this.props.changeRoom(null);
           }
         });
-        // splice current room
-        this.props.handleRoom("LEAVEROOM",this.props.currentRoom._id,this.props.currentRoom.name);
-        // set current room to null
-        this.props.changeRoom(null);
+
     }
     render(){
         const options = ["聊天室成員","取得邀請碼"];
@@ -57,15 +62,15 @@ class Nav extends React.Component{
         }),
         settingsMenu = (    
             <IconMenu
-            iconButtonElement={<IconButton iconStyle={{fill:"#6d4c41",color:"#6d4c41"}}><MoreVertIcon fill="#6d4c41"/></IconButton>}
+            iconButtonElement={<IconButton iconStyle={{fill:"#795548",color:"#795548"}}><MoreVertIcon fill="#795548"/></IconButton>}
             anchorOrigin={{horizontal: 'left', vertical: 'top'}}
             targetOrigin={{horizontal: 'left', vertical: 'top'}}
             >
             {menuItems}
             <MenuItem primaryText="離開房間" onClick={this.toggleLeaveRoom}/>
           </IconMenu>),
-          leftIcon_loggedIn = (<IconButton iconStyle={{fill:"#6d4c41",color:"#6d4c41"}}><MenuIcon fill="#6d4c41"/></IconButton>),
-          leftIcon = (<IconButton iconStyle={{fill:"#6d4c41",color:"#6d4c41"}}><TextSMSIcon fill="#6d4c41"/></IconButton>),
+          leftIcon_loggedIn = (<IconButton iconStyle={{fill:"#795548",color:"#795548"}}><MenuIcon fill="#795548"/></IconButton>),
+          leftIcon = (<IconButton iconStyle={{fill:"#795548",color:"#795548"}}><TextSMSIcon fill="#795548"/></IconButton>),
           actions = [
             <FlatButton
             label="取消"
@@ -88,12 +93,12 @@ class Nav extends React.Component{
                     iconElementRight={this.props.currentRoom?settingsMenu:null}
                     iconElementLeft={this.props.currentUser?leftIcon_loggedIn:leftIcon}
                     onLeftIconButtonTouchTap={this.props.currentUser?this.props.toggleNav:null}
-                    style = {{backgroundColor: "none", boxShadow: "none", color: "#6d4c41"}}
-                    titleStyle = {{color: "#6d4c41", fontWeight: "bold"}}
+                    style = {{backgroundColor: "none", boxShadow: "none", color: "#795548"}}
+                    titleStyle = {{color: "#795548", fontWeight: "bold"}}
                 />
                 <Dialog
-                titleClassName="noUnderline"
-                titleStyle={{textAlign: "center"}}
+                title="您確定要離開房間嗎?"
+                titleStyle={{textAlign: "center", marginBottom: 0}}
                 actionsContainerStyle={{textAlign: "center"}}
                 actions={actions}
                 modal={false}

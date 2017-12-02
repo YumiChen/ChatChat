@@ -5,12 +5,13 @@ module.exports = (_id)=>{
     if(_id===null) return {type:"CHANGEROOM",payload:null};
     // fetch to get room data
     return (dispatch)=>{
-        const api = "room/findOne?_id="+_id;
+        const api = "a/room/findOne?_id="+_id;
         fetch(api,{
             method: 'get',
             headers: {
               'Accept': 'application/json, text/plain, */*',
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
+              Authorization: "JWT "+sessionStorage.getItem("token")
             },
             body: undefined
         })

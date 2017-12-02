@@ -3,6 +3,7 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
+import ResetPassword from "./ResetPassword";
 
 class Login extends React.Component{
     constructor(props){
@@ -17,7 +18,9 @@ class Login extends React.Component{
           passwordMsg:"",
           idMsg:"",
           checkPassword:"",
-          generalHint: ""
+          generalHint: "",
+          showForgetPassword: false,
+          idForReset: ""
       };
 
         this.changeAction = this.changeAction.bind(this);
@@ -25,6 +28,10 @@ class Login extends React.Component{
         this.signUp = this.signUp.bind(this);
         this.login = this.login.bind(this);
         this.check = this.check.bind(this);
+        this.toggleForgetPassword = this.toggleForgetPassword.bind(this);
+    }
+    toggleForgetPassword(){
+      this.setState({showForgetPassword: !this.state.showForgetPassword});
     }
     changeAction(){
         this.setState({login: !this.state.login,
@@ -49,7 +56,7 @@ class Login extends React.Component{
         headers: {
           'Accept': 'application/json, text/plain, */*',
           'Content-Type': 'application/json',
-          auth: sessionStorage.getItem("token")
+          'Authorization': sessionStorage.getItem("token")
         },
         body: JSON.stringify({
           _id: that.state.id,
@@ -64,7 +71,7 @@ class Login extends React.Component{
           that.props.setUser("LOGIN",data.result);
         }
         else{
-          switch(data.error){
+          switch(data.err){
             // handlr error
           }
           this.setState({generalHint:"帳號或密碼錯誤"})
@@ -79,7 +86,7 @@ class Login extends React.Component{
         headers: {
           'Accept': 'application/json, text/plain, */*',
           'Content-Type': 'application/json',
-          auth: sessionStorage.getItem("token")
+          Authorization: "JWT "+sessionStorage.getItem("token")
         },
         body: JSON.stringify({
           _id: that.state.id,
@@ -105,7 +112,7 @@ class Login extends React.Component{
               this.setState({idMsg: "此帳號已被使用"})
               break;
             default:
-              this.setState({generalHint:"信箱或密碼錯誤"})
+              this.setState({generalHint:"某處發生錯誤,請稍後再嘗試"})
           }
         }
       });
@@ -164,12 +171,20 @@ class Login extends React.Component{
         case "checkPassword":
           this.setState({checkPassword: newVal});
           break;
+        case "":
+          this.setState({idForReset: newVal});
+          break;
       }
     }
     render(){
-        const login = this.state.login;
+        const login = this.state.login,
+              children = <TextField
+              floatingLabelText="帳號"
+              name="idForReset"
+              onChange = {this.onChange}
+            />;
         return (
-            <div className="login">
+            <form className="login" onSubmit={ login?(e)=>{ e.preventDefault(); this.login();}:(e)=>{ e.preventDefault(); this.signUp();} } >
               <h3 className="loginTitle">{login?"登入會員":"註冊會員"}</h3>
 
               <TextField
@@ -182,7 +197,7 @@ class Login extends React.Component{
               hintStyle={{color:"white"}}
               inputStyle={{color:"white"}}
             />
-            <p className="hint">{this.state.idMsg}</p>
+            <p className="hint loginHint">{this.state.idMsg}</p>
               {!login && <TextField
                 floatingLabelText="輸入信箱..."
                 hintText="注意，此欄位日後不可修改"
@@ -194,7 +209,7 @@ class Login extends React.Component{
                 hintStyle={{color:"white"}}
                 inputStyle={{color:"white"}}
               />}
-              {!login && <p className="hint">{this.state.emailMsg}</p>}
+              {!login && <p className="hint loginHint">{this.state.emailMsg}</p>}
               <TextField
                 hintText="輸入密碼..."
                 floatingLabelText="輸入密碼..."
@@ -206,7 +221,7 @@ class Login extends React.Component{
                 hintStyle={{color:"white"}}
                 inputStyle={{color:"white"}}
               />
-              <p className="hint">{this.state.passwordMsg}</p>
+              <p className="hint loginHint">{this.state.passwordMsg}</p>
               {!login && <TextField
                 floatingLabelText="確認密碼..."
                 type="password"
@@ -217,12 +232,18 @@ class Login extends React.Component{
                 hintStyle={{color:"white"}}
                 inputStyle={{color:"white"}}
               />}
-              {!login && <p className="hint">{this.state.checkPasswordMsg}</p>}
-              <p className="hint">{this.state.generalHint}</p>
-              <RaisedButton label={login?"登入":"註冊"} primary={true} style={{margin: "0.8rem"}} 
-                            onClick={login?this.login:this.signUp}/>
+              {!login && <p className="hint loginHint">{this.state.checkPasswordMsg}</p>}
+              <p className="hint loginHint">{this.state.generalHint}</p>
+              <RaisedButton type="submit" label={login?"登入":"註冊"} primary={true} style={{margin: "0.8rem"}} />
               {login?<p className="loginOrSignupHint">還未註冊?<span onClick={this.changeAction}>註冊為會員</span></p>:<p className="loginOrSignupHint">已經有帳號?<span onClick={this.changeAction}>按此登入</span></p>}
-            </div>
+              {login && <p style= {{cursor:"pointer", color: "orange" }}
+                            onClick={this.toggleForgetPassword} >忘記密碼?</p> }
+              {login && <ResetPassword toggle={this.toggleForgetPassword}
+                                      title="忘記密碼"
+                                      open={this.state.showForgetPassword}
+                                      children={children}
+                                      _id={this.state.idForReset}/>}
+            </form>
           );
     }
 }

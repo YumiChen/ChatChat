@@ -1,16 +1,18 @@
 const webpack = require('webpack');
 const path = require('path');
 const autoprefixer = require("autoprefixer");
+const config = require("./config");
 
-module.exports = [{
+process.env.NODE_ENV = config.env;
+
+let settings = [{
+  name: "app",
   entry: [
-    'eventsource-polyfill',
-    'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true',
-    './src/index'
+    './src/app/index'
   ],
   output: {
     path: path.join(__dirname, '/public'),
-    filename: 'bundle.js'
+    filename: 'app.js'
   },
   module: {
     rules: [
@@ -57,11 +59,38 @@ module.exports = [{
   },
   plugins: [
     new webpack.NamedModulesPlugin(),
-    new webpack.NoErrorsPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.ProvidePlugin({
       React: 'react',
       ReactDOM:'react-dom'
     })
   ]
 }];
+
+settings.push(Object.assign({},settings[0],{
+  name: "resetPassword",
+  entry: [
+    './src/resetPassword/index'
+  ],
+  output: {
+    path: path.join(__dirname, '/public'),
+    filename: 'resetPassword.js'
+  }
+}));
+
+// console.log(settings);
+
+if(process.env.NODE_ENV != 'production'){
+  settings.forEach(function(settings){
+    settings.entry = settings.entry.concat([
+      'eventsource-polyfill',
+      'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true'
+    ]);
+    settings.plugins = settings.plugins.concat([    
+      new webpack.NoErrorsPlugin(),
+      new webpack.HotModuleReplacementPlugin()
+    ]);
+  });
+}
+
+
+module.exports = settings;

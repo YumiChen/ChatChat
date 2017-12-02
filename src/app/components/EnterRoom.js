@@ -29,22 +29,21 @@ class EnterRoom extends React.Component{
         let index = this.props.currentUser.rooms.findIndex((el)=>{
           return el._id == this.state.roomPassword;
         });
-        console.log(index);
+        debug(index);
         if(index >= 0){
           this.setState({roomPasswordHint: "您已加入此房間"});
           return;
         }
         const that = this;
-        this.props.toggle();
             // insert room
-            const api = "user/addToRoom?userId="+that.props.currentUser._id+"&userName="+that.props.currentUser.name+"&password="+that.state.roomPassword;
-            console.log(api);
+            const api = "a/user/addToRoom?userId="+that.props.currentUser._id+"&userName="+that.props.currentUser.name+"&password="+that.state.roomPassword;
+            debug(api);
             fetch(encodeURI(api),{
               method: 'get',
               headers: {
                 'Accept': 'application/json, text/plain, */*',
                 'Content-Type': 'application/json',
-                auth: sessionStorage.getItem("token")
+                Authorization: "JWT "+sessionStorage.getItem("token")
               },
               body: undefined
             }).then((data)=>{
@@ -58,6 +57,8 @@ class EnterRoom extends React.Component{
                   that.setState({roomPasswordHint: "您已加入此房間"});
                   return;
                 }
+                that.props.toggle();
+                that.setState({roomPassword: "", roomPasswordHint: ""});
                 that.props.handleRoom("ADDTOROOM", data.result._id, data.result.name);
                 that.props.changeRoom(data.result._id);
               }else{
@@ -87,13 +88,14 @@ class EnterRoom extends React.Component{
         modal={false}
         open={this.props.open}
         onRequestClose={this.toggle}
-        titleStyle={{padding: "18px 20px", fontWeight: "bold"}}
+        titleStyle={{padding: "18px 20px 0 20px", fontWeight: "bold"}}
         >
         <p style={{margin: "0.5rem 0"}}>請輸入邀請碼</p>
         <TextField
         floatingLabelText="邀請碼"
         onChange={this.setRoomPassword}
         value={this.state.roomPassword}
+        style={{width: "90%"}}
         />
         <p className="hint">{this.state.roomPasswordHint}</p>
       </Dialog>);

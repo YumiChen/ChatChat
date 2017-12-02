@@ -1,5 +1,3 @@
-// dispatcher: currentUser, currentRoom
-
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -26,26 +24,31 @@ class AddRoom extends React.Component{
           return;
         }
         const that = this;
-        this.props.toggle();
             // insert room
-        const api = "room/insert?roomName="+that.state.roomName+"&userId="+that.props.currentUser._id+"&userName="+this.props.currentUser.name;
-            console.log(api);
+        const api = "a/room/insert?roomName="+that.state.roomName+"&userId="+that.props.currentUser._id+"&userName="+this.props.currentUser.name;
+            debug(api);
             fetch(encodeURI(api),{
                 method: 'get',
                 headers: {
                   'Accept': 'application/json, text/plain, */*',
                   'Content-Type': 'application/json',
-                  auth: sessionStorage.getItem("token")
+                  Authorization: "JWT "+sessionStorage.getItem("token")
                 },
                 body: undefined
               }).then((data)=>{
               return data.json();
             }).then((data)=>{
-              // get data of inserted room
-              // update global state: currentUser.rooms
-              that.props.handleRoom("ADDTOROOM", data.result._id, data.result.name);
-              that.props.changeRoom(data.result._id);
-              that.props.toggleRoomSettings(1);
+                if(data.success){
+                    // get data of inserted room
+                    // update global state: currentUser.rooms
+                    that.props.toggle();
+                    that.setState({roomName: "", roomNameHint: ""});
+                    that.props.handleRoom("ADDTOROOM", data.result._id, data.result.name);
+                    that.props.changeRoom(data.result._id);
+                    that.props.toggleRoomSettings(1);
+                }else{
+                    this.setState({roomNameHint: "某處發生錯誤,請稍後再嘗試"});
+                }
             });
     }
     setRoomName(event, value){
@@ -73,12 +76,13 @@ class AddRoom extends React.Component{
         modal={false}
         open={this.props.open}
         onRequestClose={this.toggle}
-        titleStyle={{padding: "18px 20px", fontWeight: "bold"}}
+        titleStyle={{padding: "18px 20px 0 20px", fontWeight: "bold"}}
       >
         <TextField
         floatingLabelText="房間名稱 Room name"
         onChange={this.setRoomName}
         value={this.state.roomName}
+        style={{width: "90%"}}
         />
         <p className="hint">{this.state.roomNameHint}</p>
         <p>創建房間後將自動產生邀請碼</p>

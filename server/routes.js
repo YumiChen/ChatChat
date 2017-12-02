@@ -3,29 +3,47 @@ const router = express.Router();
 const User = require("./models/User");
 const Room = require("./models/Room");
 const ObjectId = require('mongoose').Types.ObjectId
-const passport = require("passport");
 const passportService = require("./passport");
 const nodemailer = require("nodemailer");
 const mailer = require("./mailer");
-
-const requireAuth = passport.authenticate('jwt', { session: false });
-
+const passport = require('passport');
 // send index page
-router.get("/" , requireAuth, function(req,res){
+router.get("/" , function(req,res){
   res.sendfile('index.html', {root: './public'});
 });
+
 
 /*- USER -*/
 
 // delete user
-// id(email)
-router.get("/user/delete",function(req,res){
-  handleDB(function(db){
+// id, password
+router.post("/a/user/delete", passportService.authenticate,function(req,res){
     try{
-      User.findOneAndUpdate({_id: req.query._id}, {$set: {valid: false}}, null, function(err, resp) {
+      User.findOne({_id: req.query._id}, null, function(err, user) {
         if (err) throw err;
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify({ success: true }));
+        // check password
+        if(!user){
+          res.setHeader('Content-Type', 'application/json');
+          res.send(JSON.stringify({ success: false }));
+          return;
+        }
+        // check password
+        user.comparePassword(req.query.password, function(err, isMatch) {
+          if (err) { throw err; }
+          if (!isMatch) { 
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ success: false, err: "wrongPassword" }));
+            return;
+          }
+        });
+
+        user.valid = false;
+        user.save(function(err,resp){
+          if(err) throw err;
+          res.setHeader('Content-Type', 'application/json');
+          res.send(JSON.stringify({ success: true }));
+        });
+
       });
     }
     catch(err){
@@ -33,7 +51,6 @@ router.get("/user/delete",function(req,res){
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({ success: false }));
     }
-  });
 });
 
 
@@ -41,7 +58,7 @@ router.get("/user/delete",function(req,res){
 // create room
 // param: name, userId, userName
 // return objectId
-router.get("/room/insert",function(req,res){
+router.get("/a/room/insert", passportService.authenticate,function(req,res){
   // founder of room would be automatically added to room members
   var userId = req.query.userId,
       userName = req.query.userName,
@@ -54,9 +71,18 @@ router.get("/room/insert",function(req,res){
       log: [],
       valid: true
     }), result;
+
+    newRoom.isNew = true;
+
     try{
       // insert into room collection
       newRoom.save(function(err, resp) {
+        if(err) throw err;
+        if(resp === undefined){
+          res.setHeader('Content-Type', 'application/json');
+          res.send(JSON.stringify({ success: false }));
+          return;
+        }
         // modify user data
         result = resp;
         _id = resp._id;
@@ -82,7 +108,7 @@ router.get("/room/insert",function(req,res){
 });
 
 // find one room
-router.get("/room/findOne",function(req,res){
+router.get("/a/room/findOne", passportService.authenticate,function(req,res){
   // only query valid documents
   req.query.valid = true;
   
@@ -105,7 +131,7 @@ router.get("/room/findOne",function(req,res){
 
 // add log
 // param: roomId, userId, userName, msg
-router.get("/room/addLog",function(req,res){
+router.get("/a/room/addLog", passportService.authenticate,function(req,res){
     var msg = req.query.msg, roomId = req.query.roomId,
         userId = req.query.userId,
         name = req.query.userName;
@@ -126,7 +152,7 @@ router.get("/room/addLog",function(req,res){
 
 // update username
 // param: id, name
-router.get("/user/updateName",function(req,res){
+router.get("/a/user/updateName", passportService.authenticate,function(req,res){
   // valid should not be set through this api
   req.query.valid = true;
 
@@ -167,7 +193,7 @@ router.get("/user/updateName",function(req,res){
 
 // if password is correct, pass in user id and room id, add user to room
 // param: userId, userName, password
-router.get("/user/addToRoom",function(req,res){
+router.get("/a/user/addToRoom", passportService.authenticate,function(req,res){
     var userId = req.query.userId,
         userName = req.query.userName,
         password = req.query.password;
@@ -199,7 +225,7 @@ router.get("/user/addToRoom",function(req,res){
 
 // pass in room id and user id, remove user from room
 // userId, userName, roomId, roomName
-router.get("/user/leaveRoom",function(req,res){
+router.get("/a/user/leaveRoom",passportService.authenticate,function(req,res){
     var userId = req.query.userId,
         roomId = req.query.roomId,
         userName = req.query.userName,
@@ -213,7 +239,6 @@ router.get("/user/leaveRoom",function(req,res){
             if (err) throw err;
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify({ success: true }));
-  
           });
         });
     }
@@ -225,12 +250,12 @@ router.get("/user/leaveRoom",function(req,res){
 });
 
 /* AUTH */
-const jwt = require('jwt-simple');
+const jwt = require('jsonwebtoken');
 const config = require('../config');
 
 function tokenForUser(user) {
   const timestamp = new Date().getTime();
-  return jwt.encode({ sub: user._id, iat: timestamp }, config.secret);
+  return jwt.sign({ sub: user._id, iat: timestamp }, config.secret);
 }
 
 // create user
@@ -245,6 +270,7 @@ router.post("/user/insert",function(req,res){
       rooms: [],
       valid: true
   });
+    newUser.isNew = true;
     User.findOne({_id: newUser._id},function(err, user){
     if(err) throw err;
     if(user){
@@ -259,6 +285,11 @@ router.post("/user/insert",function(req,res){
         }else{
           newUser.save(function(err, resp) {
             if (err) throw err;
+            if(resp===undefined){
+              res.setHeader('Content-Type', 'application/json');
+              res.send(JSON.stringify({ success: false }));
+              return;
+            }
               resp.email = null;
               resp.password = null;
 
@@ -287,14 +318,20 @@ router.post("/user/login",function(req,res){
     console.log(req.body);
     try{
         // TODO room.valid as false if no members are left in the room
-        User.findOne({_id: _id}, { name: true, rooms: true , password: true, emailVerified: true }, function(err,user){
+        User.findOne({_id: _id, valid: true}, { name: true, rooms: true , password: true, confirmed: true }, function(err,user){
           // user decript method
           console.log(user);
+          if(!user){
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify({ success: false, err: "unexistedUser" }));
+            return;
+          }
           user.comparePassword(password, function(err, isMatch) {
             if (err) { throw err; }
             if (!isMatch) { 
               res.setHeader('Content-Type', 'application/json');
               res.send(JSON.stringify({ success: false }));
+              return;
             }
       
             user.password = null;
@@ -314,20 +351,64 @@ router.post("/user/login",function(req,res){
     }
 });
 
-router.post("/sendResetPasswordMail",mailer.sendResetPasswordMail);
 
-router.post("/resetPassword",function(req,res){
-  var _id = req.body._id, 
-      password = req.body.password;
+/*----- reset password -----*/
+// _id, email
+router.get("/reset/:token",function(req,res){
+  var token = req.params.token;
   try{
-    User.findById(_id,function(err,user){
+    jwt.verify(token,config.secret,function(err,decoded){
+      if(err) throw err; // invalid token
+      console.log(decoded);
+      User.findById(decoded.sub,function(err,user){
+        if(err) throw err;
+        console.log(user);
+        if(!user){
+          console.log("no such user");
+          res.sendfile('404.html', {root: './public'});
+        }else{
+          console.log("rest page is requested");
+          res.sendfile('reset.html', {root: './public'});
+        }
+      });
+    });
+  }catch(err){
+    res.sendfile('404.html', {root: './public'});
+  }
+});
+
+// _id, email
+router.post("/a/sendResetPasswordMail",passportService.authenticate,mailer.sendResetPasswordMail);
+
+// _id, password
+router.post("/a/resetPassword",function(req,res){
+  var token = req.body.token, 
+      password = req.body.password;
+  
+  try{
+  
+  jwt.verify(token,config.secret,function(err,decoded){
+    if(err) throw err;
+    if(!decoded){
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify({ success: false }));
+      return;
+    }
+
+    User.findById(decoded.sub,function(err,user){
+      if(!user){
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify({ success: false }));
+        return;
+      }
       user.password = password;
-      user.save(function(err,res){
+      user.save(function(err,resp){
         if(err) throw err;
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify({ success: true }));
       });
     });
+  });
   }catch(err){
     console.log(err);
     res.setHeader('Content-Type', 'application/json');

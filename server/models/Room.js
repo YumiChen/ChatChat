@@ -26,11 +26,6 @@ mongoose.connect(config.db,
 
 // Define our model
 const roomSchema = new Schema({
-  _id: { 
-    type: Schema.ObjectId, 
-    unique: true,
-    default: mongoose.Types.ObjectId()
-},
   name: {
       type: String,
       required: true

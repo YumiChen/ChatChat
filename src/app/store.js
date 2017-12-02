@@ -6,7 +6,7 @@ const store = createStore(rootReducer,applyMiddleware(thunk));
 
 store.subscribe(()=>{
   const action = store.getState().lastAction;
-  console.log(action); 
+  debug(action); 
 });
 
 

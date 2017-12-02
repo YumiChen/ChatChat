@@ -58,7 +58,7 @@ class App extends React.Component{
                         toggleUserSettings={this.toggleUserSettings}/>:<Login/>;
     if(this.props.currentRoom && loggedIn) el = <Log/>;
     return (
-      <div>
+      <div style={{height: "100%"}}>
         <Nav toggleNav={this.toggleNav} toggleRoomSettings={this.toggleRoomSettings}/>
         <div className="mainContainer">
           {loggedIn && <Sidebar open={this.state.showNav} toggle={this.toggleNav} toggleAddRoom={this.toggleAddRoom} toggleEnterRoom={this.toggleEnterRoom} toggleUserSettings={this.toggleUserSettings}

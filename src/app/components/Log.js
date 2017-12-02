@@ -9,12 +9,15 @@ class Log extends React.Component{
         this.sendMsg = this.sendMsg.bind(this);
     }
     componentDidMount(){
-        var output = document.getElementById('output'), that = this;
-        if(!socket._callbacks.$chat){
+        const that = this;
+        if(!socket._callbacks['$chat']){
             socket.on('chat', function(data){
-                that.props.addLog(data);
-                console.log("socket received data");
+                if(data.roomId === that.props.currentRoom._id){
+                    that.props.addLog(data);
+                    debug("socket received data");
+                }
             });
+            debug(socket);
         }
     }
     sendMsg(event){
@@ -23,23 +26,27 @@ class Log extends React.Component{
         // Get DOM
         var message = document.getElementById('msg'),
             userId = this.props.currentUser._id,
-            userName = this.props.currentUser.name;
+            userName = this.props.currentUser.name,
+            roomId = this.props.currentRoom._id;
         if (message.value === "") return;
 
         const payload = {
+            roomId: roomId,
             _id: userId,
             name: userName,
             msg: message.value
         };
 
+        debug(payload);
+
         // save message to log
-        const api = "room/addLog?userId="+userId+"&userName="+userName+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
+        const api = "a/room/addLog?userId="+userId+"&userName="+userName+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
         fetch(encodeURI(api),{
             method: 'get',
             headers: {
               'Accept': 'application/json, text/plain, */*',
               'Content-Type': 'application/json',
-              auth: sessionStorage.getItem("token")
+              Authorization: "JWT "+sessionStorage.getItem("token")
             },
             body: undefined
           }).then((data)=>{
@@ -68,7 +75,7 @@ class Log extends React.Component{
                 <TextField
                     id = "msg"
                     hintText=""
-                    style={{width: "calc(100vw - 8.5rem)"}}
+                    style={{width: "calc(100vw - 9rem)"}}
                 />
                 <RaisedButton label="SEND" primary={true} 
                     onClick={this.sendMsg}

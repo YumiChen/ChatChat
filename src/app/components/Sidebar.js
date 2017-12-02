@@ -52,9 +52,9 @@ class Sidebar extends React.Component{
       {this.props.currentUser.rooms.length>0 && <Divider />}
       <MenuItem primaryText="創建聊天室" leftIcon={<Add />} 
         onClick={props.toggleAddRoom}/>
-        <MenuItem primaryText="進入新聊天室" leftIcon={<PersonAdd />} 
+        <MenuItem primaryText="進入聊天室" leftIcon={<PersonAdd />} 
         onClick={props.toggleEnterRoom}/>
-        <MenuItem primaryText="修改個人資料" leftIcon={<Edit />} 
+        <MenuItem primaryText="帳號管理" leftIcon={<Edit />} 
         onClick={props.toggleUserSettings}/>        
         <MenuItem primaryText="登出帳號" leftIcon={<Forward />} 
         onClick={this.signOut}/>        

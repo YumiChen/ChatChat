@@ -36,7 +36,7 @@ const userSchema = new Schema({
     }],
     default: []
 },
-  emailVerified: {
+  confirmed: {
     type: Boolean,
     default: false
   },
