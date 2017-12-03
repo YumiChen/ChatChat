@@ -1,6 +1,3 @@
-// state: currentUser
-// dispatcher: currentRoom
-
 import React from 'react';
 import {List, ListItem} from 'material-ui/List';
 import RemoveRedEye from 'material-ui/svg-icons/image/remove-red-eye';

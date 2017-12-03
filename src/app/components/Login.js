@@ -3,7 +3,7 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import ResetPassword from "./ResetPassword";
+import ResetPassword from "./dialogs/ResetPassword";
 
 class Login extends React.Component{
     constructor(props){
@@ -74,6 +74,7 @@ class Login extends React.Component{
           switch(data.err){
             // handlr error
           }
+          console.log(data);
           this.setState({generalHint:"帳號或密碼錯誤"})
         }
       });

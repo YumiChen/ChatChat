@@ -7,7 +7,7 @@ const User = require('./models/User');
 function tokenForUser(user) {
   const timestamp = new Date().getTime();
   return jwt.sign({ sub: user._id, iat: timestamp }, config.secret,{
-    expiresIn: "2h"
+    expiresIn: "1m"
   });
 }
 

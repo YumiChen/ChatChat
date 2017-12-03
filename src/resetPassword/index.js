@@ -13,6 +13,7 @@ import { fade } from 'material-ui/utils/colorManipulator'
 
 // set debug method
 import debug from "../debug";
+import detectDevice from "../detectDevice";
 
 const getTheme = (() => {
   let overwrites = {
@@ -84,6 +85,9 @@ class App extends React.Component{
                 this.setState({newPasswordHint: "某處發生了錯誤"});
             }
         });
+    }
+    componentDidMount(){
+        if(mobileAndTabletcheck()) body.style.height = window.innerHeight +'px';
     }
     render(){
         return (

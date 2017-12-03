@@ -3,7 +3,6 @@ var socket = require('socket.io');
 var BodyParser = require( 'body-parser' );
 var router = require("./server/routes");
 var config = require("./config");
-var poke = require("./poke");
 var passportService = require("./server/passport");
 process.env.NODE_ENV = config.env;
 
@@ -30,6 +29,7 @@ app.use("/",router);
 
 // hmr
 if(process.env.NODE_ENV != 'production'){
+
     var webpack = require('webpack');
     var config = require('./webpack.config');
     var compiler = webpack(config);
@@ -53,8 +53,9 @@ if(process.env.NODE_ENV != 'production'){
     path: '/__webpack_hmr',
     heartbeat: 10 * 1000,
     }));
+}else{
+    var poke = require("./poke");
 }
-
 
 
 // Socket setup & event emitter setup

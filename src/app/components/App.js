@@ -1,15 +1,19 @@
-import React from "react";
+import {Component} from "react";
 import Nav from "./Nav";
 import Sidebar from "./Sidebar";
 import Log from "./Log";
-import AddRoom from "./AddRoom";
-import EnterRoom from "./EnterRoom";
+import AddRoom from "./dialogs/AddRoom";
+import EnterRoom from "./dialogs/EnterRoom";
 import RoomSettings from "./RoomSettings";
 import UserSettings from "./UserSettings";
 import Index from "./Index";
 import Login from "./Login";
 
-class App extends React.Component{
+// detect device
+import detectDevice from "../../detectDevice";
+
+
+class App extends Component{
   constructor(props){
     super(props);
     this.state = {
@@ -51,6 +55,9 @@ class App extends React.Component{
     }else{
       this.setState({showRoomSettings:!this.state.showRoomSettings});
     }
+  }
+  componentDidMount(){
+    if(mobileAndTabletcheck()) body.style.height = window.innerHeight +'px';
   }
   render(){
     const loggedIn = (this.props.currentUser!=null);

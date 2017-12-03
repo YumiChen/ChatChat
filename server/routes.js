@@ -32,16 +32,17 @@ router.post("/a/user/delete", passportService.authenticate,function(req,res){
           if (err) { throw err; }
           if (!isMatch) { 
             res.setHeader('Content-Type', 'application/json');
+            console.log("wrong password");
             res.send(JSON.stringify({ success: false, err: "wrongPassword" }));
             return;
+          }else{
+            user.valid = false;
+            user.save(function(err,resp){
+              if(err) throw err;
+              res.setHeader('Content-Type', 'application/json');
+              res.send(JSON.stringify({ success: true }));
+            });
           }
-        });
-
-        user.valid = false;
-        user.save(function(err,resp){
-          if(err) throw err;
-          res.setHeader('Content-Type', 'application/json');
-          res.send(JSON.stringify({ success: true }));
         });
 
       });
@@ -329,8 +330,9 @@ router.post("/user/login",function(req,res){
           user.comparePassword(password, function(err, isMatch) {
             if (err) { throw err; }
             if (!isMatch) { 
+              console.log("wrongPassword");
               res.setHeader('Content-Type', 'application/json');
-              res.send(JSON.stringify({ success: false }));
+              res.send(JSON.stringify({ success: false, err: "wrongPassword" }));
               return;
             }
       

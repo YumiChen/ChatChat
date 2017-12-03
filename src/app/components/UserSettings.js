@@ -4,8 +4,8 @@ import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import {Tabs, Tab} from 'material-ui/Tabs';
 import RaisedButton from 'material-ui/RaisedButton';
-import DeleteUser from "./DeleteUser";
-import ResetPassword from "./ResetPassword";
+import DeleteUser from "./dialogs/DeleteUser";
+import ResetPassword from "./dialogs/ResetPassword";
 
 class UserSettings extends React.Component{
     constructor(props){
@@ -44,8 +44,8 @@ class UserSettings extends React.Component{
               return data.json();
             }).then((data)=>{
               that.props.toggle();
-              that.setState({userName: "", userNameHint: ""});
               that.props.setUser("RESET",data.result);
+              that.setState({userName: this.props.currentUser.name, userNameHint: ""});
               if(this.props.currentRoom)that.props.changeRoom(this.props.currentRoom._id);
             });
     }

@@ -66,16 +66,16 @@ let settings = [{
   ]
 }];
 
-settings.push(Object.assign({},settings[0],{
-  name: "resetPassword",
-  entry: [
-    './src/resetPassword/index'
-  ],
-  output: {
-    path: path.join(__dirname, '/public'),
-    filename: 'resetPassword.js'
-  }
-}));
+// settings.push(Object.assign({},settings[0],{
+//   name: "resetPassword",
+//   entry: [
+//     './src/resetPassword/index'
+//   ],
+//   output: {
+//     path: path.join(__dirname, '/public'),
+//     filename: 'resetPassword.js'
+//   }
+// }));
 
 // console.log(settings);
 

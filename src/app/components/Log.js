@@ -2,11 +2,21 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import socket from "../socket";
+import SendIcon from 'material-ui/svg-icons/content/send';
+import EmojiIcon from 'material-ui/svg-icons/image/tag-faces';
+import Emoji from "./Emoji";
 
 class Log extends React.Component{
     constructor(props){
         super(props);
+        this.state = {
+            showEmoji: false
+        };
+
         this.sendMsg = this.sendMsg.bind(this);
+        this.toggleEmoji = this.toggleEmoji.bind(this);
+        this.addEmoji = this.addEmoji.bind(this);
+        this.autoScroll = this.autoScroll.bind(this);
     }
     componentDidMount(){
         const that = this;
@@ -19,6 +29,11 @@ class Log extends React.Component{
             });
             debug(socket);
         }
+        this.autoScroll();
+    }
+    componentDidUpdate(){
+        debug("componentDidUpdate");
+        this.autoScroll();
     }
     sendMsg(event){
         event.preventDefault();
@@ -57,30 +72,53 @@ class Log extends React.Component{
             }
             // emit message
             socket.emit('chat', payload);
-        });
 
-        message.value = "";
+            message.value = "";
+            if(this.state.showEmoji) this.setState({showEmoji: false});
+        });
+    }
+    autoScroll(){
+        this.refs.output.scrollTop = output.scrollHeight;   
+    }
+    toggleEmoji(){
+        this.setState({showEmoji: !this.state.showEmoji},()=>{
+            if(this.state.showEmoji){
+                setTimeout(()=>{
+                    this.autoScroll();
+                },600);
+            }
+        });
+    }
+    addEmoji(event){
+        debug(document.getElementById('msg').innerHTML);
+        document.getElementById('msg').value += event.target.innerHTML;
     }
     render(){
         const id = this.props.currentUser._id;
         return (
         <div className="log">
-            <div id="output">
+            <div id="output" ref ="output" style={this.state.showEmoji?{height: "calc(calc(100% - 18rem) - 64px)"}:{height: "calc(calc(100% - 3rem) - 64px)"}}>
                 {this.props.currentRoom.log.map((data,index)=>{
                     if(data._id == id) return (<p className="ownMsg" key={index}>{data.msg}</p>);
                     return (<div key={index}><small className="msgName">{data.name}</small><p className="msg" key={index}>{data.msg}</p></div>);
                 })}
             </div>
-            <div className="log_input">
+            <div className="log_input" style={{height: "3rem"}}>
                 <TextField
                     id = "msg"
                     hintText=""
-                    style={{width: "calc(100vw - 9rem)"}}
+                    style={{width: "calc(100vw - 7rem)"}}
                 />
-                <RaisedButton label="SEND" primary={true} 
+                <EmojiIcon
+                    onClick={this.toggleEmoji}
+                    style={{margin: "0.2rem 0.5rem", cursor:"pointer"}}
+                />
+                <SendIcon
                     onClick={this.sendMsg}
-                    style={{margin: "0.2rem 1rem"}}/>
-            </div>
+                    style={{margin: "0.2rem 0.5rem", cursor:"pointer"}}
+                />
+                </div>
+            <Emoji toggle={this.toggleEmoji} addEmoji={this.addEmoji}/>
         </div>);
     }
   };
