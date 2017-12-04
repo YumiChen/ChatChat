@@ -66,18 +66,6 @@ let settings = [{
   ]
 }];
 
-// settings.push(Object.assign({},settings[0],{
-//   name: "resetPassword",
-//   entry: [
-//     './src/resetPassword/index'
-//   ],
-//   output: {
-//     path: path.join(__dirname, '/public'),
-//     filename: 'resetPassword.js'
-//   }
-// }));
-
-// console.log(settings);
 
 if(process.env.NODE_ENV != 'production'){
   settings.forEach(function(settings){
@@ -90,6 +78,17 @@ if(process.env.NODE_ENV != 'production'){
       new webpack.HotModuleReplacementPlugin()
     ]);
   });
+}else{
+  settings.push(Object.assign({},settings[0],{
+    name: "resetPassword",
+    entry: [
+      './src/resetPassword/index'
+    ],
+    output: {
+      path: path.join(__dirname, '/public'),
+      filename: 'resetPassword.js'
+    }
+  }));
 }
 
 
