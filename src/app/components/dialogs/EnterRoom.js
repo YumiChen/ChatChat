@@ -21,7 +21,7 @@ class EnterRoom extends Component{
       }
       const that = this;
           // insert room
-          const api = "a/user/addToRoom?userId="+that.props.currentUser._id+"&userName="+that.props.currentUser.name+"&password="+value;
+          const api = "user/addToRoom?userId="+that.props.currentUser._id +"&password="+value;
           debug(api);
           fetch(encodeURI(api),{
             method: 'get',
@@ -32,6 +32,7 @@ class EnterRoom extends Component{
             },
             body: undefined
           }).then((data)=>{
+            if(data.statusText=="Unauthorized") return {success: false};
             return data.json();
           }).then((data)=>{
             if(data.success){

@@ -28,6 +28,7 @@ class BaseDialog extends React.Component{
     }
     handle(){
         this.props.handle(this.state.value, this.setHint);
+        this.setState({ value: this.props.default || "", hint:""});
     }
     render(){
         const props = this.props,
@@ -51,13 +52,14 @@ class BaseDialog extends React.Component{
         actions={actions}
         modal={false}
         open={this.props.open}
-        onRequestClose={this.props.toggle}
+        onRequestClose={this.toggle}
         titleStyle={{padding: "18px 20px 0 20px", fontWeight: "bold"}}
         contentStyle={{maxWidth: "none"}}
         >
         <p className={this.props.des1Class}>{this.props.des1}</p>
         <TextField
         label={this.props.label}
+        type={this.props.type || "text"}
         floatingLabelText={this.props.floatingLabel}
         onChange={this.setValue}
         value={this.state.value}

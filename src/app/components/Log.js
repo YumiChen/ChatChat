@@ -55,7 +55,7 @@ class Log extends React.Component{
         debug(payload);
 
         // save message to log
-        const api = "a/room/addLog?userId="+userId+"&userName="+userName+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
+        const api = "room/addLog?userId="+userId+"&userName="+userName+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
         fetch(encodeURI(api),{
             method: 'get',
             headers: {
@@ -65,6 +65,7 @@ class Log extends React.Component{
             },
             body: undefined
           }).then((data)=>{
+            if(data.statusText=="Unauthorized") return {success: false};
             return data.json();
         }).then(({success})=>{
             if(!success){
@@ -97,13 +98,13 @@ class Log extends React.Component{
         const id = this.props.currentUser._id;
         return (
         <div className="log">
-            <div id="output" ref ="output" style={this.state.showEmoji?{height: "calc(calc(100% - 18rem) - 64px)"}:{height: "calc(calc(100% - 3rem) - 64px)"}}>
+            <div id="output" ref ="output" style={this.state.showEmoji?{height: "calc(100% - 20rem)"}:{height: "calc(100% - 5rem)"}}>
                 {this.props.currentRoom.log.map((data,index)=>{
                     if(data._id == id) return (<p className="ownMsg" key={index}>{data.msg}</p>);
                     return (<div key={index}><small className="msgName">{data.name}</small><p className="msg" key={index}>{data.msg}</p></div>);
                 })}
             </div>
-            <div className="log_input" style={{height: "3rem"}}>
+            <div className="log_input" style={{height: "5rem"}}>
                 <TextField
                     id = "msg"
                     hintText=""

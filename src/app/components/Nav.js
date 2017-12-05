@@ -28,7 +28,7 @@ class Nav extends React.Component{
     leaveRoom(){
         const currentRoom = this.props.currentRoom,
               currentUser = this.props.currentUser,
-              api = "a/user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name;
+              api = "user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name;
         debug("JWT "+sessionStorage.getItem("token"));
         fetch(encodeURI(api),{
             method: 'get',
@@ -40,6 +40,7 @@ class Nav extends React.Component{
             body: undefined
           })
         .then((data)=>{
+          if(data.statusText=="Unauthorized") return {success: false};
           return data.json();
         }).then(({success})=>{
           if(!success) {

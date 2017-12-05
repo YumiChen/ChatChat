@@ -3,7 +3,7 @@
 import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
-import ResetPassword from "./dialogs/ResetPassword";
+import ForgetPassword from "./dialogs/ForgetPassword";
 
 class Login extends React.Component{
     constructor(props){
@@ -20,7 +20,8 @@ class Login extends React.Component{
           checkPassword:"",
           generalHint: "",
           showForgetPassword: false,
-          idForReset: ""
+          showConfirmationHint: false,
+          confirmationHint: ""
       };
 
         this.changeAction = this.changeAction.bind(this);
@@ -29,6 +30,8 @@ class Login extends React.Component{
         this.login = this.login.bind(this);
         this.check = this.check.bind(this);
         this.toggleForgetPassword = this.toggleForgetPassword.bind(this);
+        this.resendConfirmationMail = this.resendConfirmationMail.bind(this);
+        this.clear = this.clear.bind(this);
     }
     toggleForgetPassword(){
       this.setState({showForgetPassword: !this.state.showForgetPassword});
@@ -47,9 +50,21 @@ class Login extends React.Component{
           generalHint: ""
         });
     }
+    clear(){
+      this.setState({
+        emailMsg:"",
+        passwordMsg:"",
+        idMsg:"",
+        checkPasswordMsg:"",
+        generalHint: "",
+        showConfirmationHint: false
+      });
+      sessionStorage.setItem("token",null);
+    }
     login(){
       if(!this.check()) return;
       const that = this, api = "user/login";
+      this.clear();
       fetch(encodeURI(api),
       {
         method: 'post',
@@ -68,20 +83,29 @@ class Login extends React.Component{
         // set currentUser as data got from response
         if(data.success) {
           sessionStorage.setItem("token",data.token);
+          this.setState({showConfirmationHint: false});
           that.props.setUser("LOGIN",data.result);
         }
         else{
           switch(data.err){
-            // handlr error
+            case "notConfirmed":
+              this.setState({
+                showConfirmationHint: true,
+                confirmationHint: "您的帳號尚未驗證"
+              });
+              sessionStorage.setItem("token",data.token);
+              break;
+            default:
+              this.setState({generalHint:"帳號或密碼錯誤"})
+              break;
           }
-          console.log(data);
-          this.setState({generalHint:"帳號或密碼錯誤"})
         }
       });
     }
     signUp(){
       if(!this.check()) return;
       const that = this, api = "user/insert";
+      this.clear();
       fetch(encodeURI(api),{
         method: 'post',
         headers: {
@@ -100,8 +124,11 @@ class Login extends React.Component{
       }).then((data)=>{
         // set currentUser as data got from response
         if(data.success){
+          this.setState({
+            showConfirmationHint: true,
+            confirmationHint: "信箱驗證信已寄至您的信箱"
+          });
           sessionStorage.setItem("token",data.token);
-          that.props.setUser("LOGIN",data.result);
         }
         else{
           switch(data.err){
@@ -172,20 +199,42 @@ class Login extends React.Component{
         case "checkPassword":
           this.setState({checkPassword: newVal});
           break;
-        case "":
-          this.setState({idForReset: newVal});
-          break;
       }
     }
+    resendConfirmationMail(){
+      const that = this, api = "resendConfirmationMail/" + sessionStorage.getItem("token");
+      fetch(encodeURI(api),{
+        method: 'post',
+        headers: {
+          'Accept': 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+          Authorization: "JWT "+sessionStorage.getItem("token")
+        },
+        body: undefined
+      }).then((data)=>{
+        console.log(data);
+        if(data.statusText=="Unauthorized") return {success: false};
+        return data.json();
+      }).then((data)=>{
+        // set currentUser as data got from response
+        if(data.success){
+          this.setState({
+            confirmationHint: "信箱驗證信已寄至您的信箱"
+          });
+        }
+        else{
+          switch(data.err){
+            default:
+              this.setState({confirmationHint:"某處發生錯誤,請稍後再嘗試"})
+          }
+        }
+    });
+    }
     render(){
-        const login = this.state.login,
-              children = <TextField
-              floatingLabelText="帳號"
-              name="idForReset"
-              onChange = {this.onChange}
-            />;
+        const login = this.state.login;
         return (
             <form className="login" onSubmit={ login?(e)=>{ e.preventDefault(); this.login();}:(e)=>{ e.preventDefault(); this.signUp();} } >
+              {this.state.showConfirmationHint && <div className="confirmationHint"><p>{this.state.confirmationHint}</p><p onClick={this.resendConfirmationMail}>重寄驗證信?</p></div>}
               <h3 className="loginTitle">{login?"登入會員":"註冊會員"}</h3>
 
               <TextField
@@ -237,13 +286,12 @@ class Login extends React.Component{
               <p className="hint loginHint">{this.state.generalHint}</p>
               <RaisedButton type="submit" label={login?"登入":"註冊"} primary={true} style={{margin: "0.8rem"}} />
               {login?<p className="loginOrSignupHint">還未註冊?<span onClick={this.changeAction}>註冊為會員</span></p>:<p className="loginOrSignupHint">已經有帳號?<span onClick={this.changeAction}>按此登入</span></p>}
-              {login && <p style= {{cursor:"pointer", color: "orange" }}
-                            onClick={this.toggleForgetPassword} >忘記密碼?</p> }
-              {login && <ResetPassword toggle={this.toggleForgetPassword}
-                                      title="忘記密碼"
+              {login && <p  className="forgetPassword"
+                            style= {{cursor:"pointer"}}
+                            onClick={this.toggleForgetPassword} >忘記帳號或密碼?</p> }
+              {login && <ForgetPassword toggle={this.toggleForgetPassword}
                                       open={this.state.showForgetPassword}
-                                      children={children}
-                                      _id={this.state.idForReset}/>}
+                                      />}
             </form>
           );
     }

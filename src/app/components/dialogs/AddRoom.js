@@ -13,7 +13,7 @@ class AddRoom extends React.Component{
         }
         const that = this;
             // insert room
-        const api = "a/room/insert?roomName="+value+"&userId="+that.props.currentUser._id+"&userName="+this.props.currentUser.name;
+        const api = "room/insert?roomName="+value+"&userId="+that.props.currentUser._id+"&userName="+this.props.currentUser.name;
             debug(api);
             fetch(encodeURI(api),{
                 method: 'get',
@@ -24,7 +24,8 @@ class AddRoom extends React.Component{
                 },
                 body: undefined
               }).then((data)=>{
-              return data.json();
+                if(data.statusText=="Unauthorized") return {success: false};
+                return data.json();
             }).then((data)=>{
                 if(data.success){
                     // get data of inserted room

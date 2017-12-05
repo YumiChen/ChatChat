@@ -14,7 +14,7 @@ class ResetPassword extends Component{
         }
     
         const that = this;
-        const api = "a/sendResetPasswordMail";
+        const api = "sendResetPasswordMail";
         debug(api);
         fetch(encodeURI(api),{
             method: 'post',
@@ -27,7 +27,7 @@ class ResetPassword extends Component{
             JSON.stringify(
                 {
                     _id: that.props.currentUser?that.props.currentUser._id:that.props._id,
-                    email: value
+                    password: value
                 })
           }).then((data)=>{
           return data.json();
@@ -37,8 +37,8 @@ class ResetPassword extends Component{
             }else{
                 // handle error
                 debug(data.err);
-                if(data.err == "wrongEmail"){
-                    setHint("信箱錯誤");
+                if(data.err == "wrongPassword"){
+                    setHint("密碼錯誤");
                 }else setHint("某處發生錯誤,請稍後再嘗試");
             }
         });
@@ -48,10 +48,11 @@ class ResetPassword extends Component{
             <BaseDialog
                 toggle = {this.props.toggle}        
                 handle = {this.resetPassword}
-                label = "請輸入信箱..."
-                floatingLabel = "請輸入信箱..."
-                title = {this.props.title}
+                label = "請輸入密碼..."
+                floatingLabel = "請輸入密碼..."
+                title = "重設密碼"
                 open={this.props.open}
+                type="password"
             />);
     }
 }

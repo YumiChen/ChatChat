@@ -57,7 +57,16 @@ class App extends Component{
     }
   }
   componentDidMount(){
-    if(mobileAndTabletcheck()) body.style.height = window.innerHeight +'px';
+    if(mobileAndTabletcheck()){
+      // document.body.style.height = window.innerHeight +'px';
+      window.onresize = function(){
+        // var height = window.innerHeight +'px';
+        // document.body.style.height = height;
+        setTimeout(function(){
+          document.querySelector("#output").scrollTop = output.scrollHeight;
+        },600);
+    }
+    }
   }
   render(){
     const loggedIn = (this.props.currentUser!=null);

@@ -30,7 +30,7 @@ class UserSettings extends React.Component{
         }
         const that = this;
             // insert room
-            const api = "a/user/updateName?_id="+this.props.currentUser._id+"&name="+this.state.userName;
+            const api = "user/updateName?_id="+this.props.currentUser._id+"&name="+this.state.userName;
             debug(api);
             fetch(encodeURI(api),{
                 method: 'get',
@@ -41,6 +41,7 @@ class UserSettings extends React.Component{
                 },
                 body: undefined
               }).then((data)=>{
+                if(data.statusText=="Unauthorized") return {success: false};
               return data.json();
             }).then((data)=>{
               that.props.toggle();

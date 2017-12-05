@@ -25,8 +25,8 @@ mongoose.connect(config.db,
 
 // Define our model
 const userSchema = new Schema({
-  _id: { type: String, required: true, unique: true, lowercase: true },
-  email: { type: String, required: true, unique: true, lowercase: true },
+  _id: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true},
   name: {type: String, required: true},
   password: {type: String, required: true},
   rooms: {

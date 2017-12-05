@@ -34,11 +34,9 @@ require("./assets/stylesheets/test.sass");
 
 const Output = (props)=>(
   <Provider store={store}>
-    <div style={{height: "100%"}}>
     <MuiThemeProvider muiTheme={getTheme}>
       <App/>
     </MuiThemeProvider>
-    </div>
   </Provider>      
 );
 

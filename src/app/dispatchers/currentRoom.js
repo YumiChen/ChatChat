@@ -1,11 +1,16 @@
 // currentRoom
 
-module.exports = (_id)=>{
+module.exports = (_idorData)=>{
+    debug(_idorData);
     // set to null when user leaves current Room
-    if(_id===null) return {type:"CHANGEROOM",payload:null};
+    if(_idorData===null) return {type:"CHANGEROOM",payload:null};
+    // directly dispatch if room data is passed in
+    else if(typeof _idorData === 'object') return {type: "CHANGEROOM", payload: _idorData};
+    
     // fetch to get room data
     return (dispatch)=>{
-        const api = "a/room/findOne?_id="+_id;
+        const api = "room/findOne?_id="+_idorData;
+        debug(api);
         fetch(api,{
             method: 'get',
             headers: {
@@ -16,8 +21,10 @@ module.exports = (_id)=>{
             body: undefined
         })
         .then((data)=>{
+            if(data.statusText=="Unauthorized") return {success: false};
             return data.json();
         }).then((data)=>{
+            debug(data);
             dispatch({
             type: "CHANGEROOM",
             payload: data.result

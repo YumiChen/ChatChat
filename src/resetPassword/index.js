@@ -87,7 +87,15 @@ class App extends React.Component{
         });
     }
     componentDidMount(){
-        if(mobileAndTabletcheck()) body.style.height = window.innerHeight +'px';
+        if(mobileAndTabletcheck()){
+            document.body.style.height = window.innerHeight +'px';
+            document.body.style.backgroundSize = window.innerWidth + " " + window.innerHeight;
+            window.onResize = function(){
+                alert("resize");
+                document.body.style.height = window.innerHeight +'px';
+                document.body.style.backgroundSize = window.innerWidth + " " + window.innerHeight;
+            }
+        }
     }
     render(){
         return (

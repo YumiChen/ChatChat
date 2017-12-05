@@ -19,6 +19,8 @@ class Sidebar extends React.Component{
   }
   changeRoom(event, obj, index){
       if(!obj.props.value) return;
+      const msg = document.querySelector("#msg");
+      if(msg) msg.value = "";
       this.props.changeRoom(obj.props.value);
       this.props.toggle();
   }
