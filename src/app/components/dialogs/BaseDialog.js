@@ -26,9 +26,9 @@ class BaseDialog extends React.Component{
         this.props.toggle();
         this.setState({ value: this.props.default || "", hint:""});
     }
-    handle(){
-        this.props.handle(this.state.value, this.setHint);
-        this.setState({ value: this.props.default || "", hint:""});
+    handle(event){
+        event.preventDefault();
+        this.props.handle(this.state.value, this.setHint, this.setValue);
     }
     render(){
         const props = this.props,
@@ -55,7 +55,9 @@ class BaseDialog extends React.Component{
         onRequestClose={this.toggle}
         titleStyle={{padding: "18px 20px 0 20px", fontWeight: "bold"}}
         contentStyle={{maxWidth: "none"}}
+        autoDetectWindowHeight={false}
         >
+        <form onSubmit={this.handle}>
         <p className={this.props.des1Class}>{this.props.des1}</p>
         <TextField
         label={this.props.label}
@@ -67,6 +69,7 @@ class BaseDialog extends React.Component{
         />
         <p className="hint">{this.state.hint}</p>
         <p>{this.props.des2}</p>
+        </form>
         </Dialog>
         );
     }

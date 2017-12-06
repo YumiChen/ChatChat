@@ -1,4 +1,4 @@
-// currentRoom
+import store from "../store";
 
 module.exports = (_idorData)=>{
     debug(_idorData);
@@ -11,6 +11,12 @@ module.exports = (_idorData)=>{
     return (dispatch)=>{
         const api = "room/findOne?_id="+_idorData;
         debug(api);
+
+        dispatch({
+            type: "TOGGLELOADING",
+            payload: true
+        });
+
         fetch(api,{
             method: 'get',
             headers: {
@@ -28,6 +34,11 @@ module.exports = (_idorData)=>{
             dispatch({
             type: "CHANGEROOM",
             payload: data.result
+            });
+
+            dispatch({
+                type: "TOGGLELOADING",
+                payload: false
             });
         })
           // .catch(err,()=>{alert(err)});

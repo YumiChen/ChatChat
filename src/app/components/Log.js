@@ -17,6 +17,7 @@ class Log extends React.Component{
         this.toggleEmoji = this.toggleEmoji.bind(this);
         this.addEmoji = this.addEmoji.bind(this);
         this.autoScroll = this.autoScroll.bind(this);
+        this.onFocus = this.onFocus.bind(this);
     }
     componentDidMount(){
         const that = this;
@@ -42,20 +43,23 @@ class Log extends React.Component{
         var message = document.getElementById('msg'),
             userId = this.props.currentUser._id,
             userName = this.props.currentUser.name,
-            roomId = this.props.currentRoom._id;
+            roomId = this.props.currentRoom._id,
+            that = this;
         if (message.value === "") return;
 
         const payload = {
             roomId: roomId,
             _id: userId,
             name: userName,
-            msg: message.value
+            msg: message.value,
+            time: new Date()
         };
 
         debug(payload);
 
         // save message to log
         const api = "room/addLog?userId="+userId+"&userName="+userName+"&msg="+msg.value+"&roomId="+this.props.currentRoom._id;
+        this.props.toggleLoading(true);
         fetch(encodeURI(api),{
             method: 'get',
             headers: {
@@ -68,6 +72,7 @@ class Log extends React.Component{
             if(data.statusText=="Unauthorized") return {success: false};
             return data.json();
         }).then(({success})=>{
+            that.props.toggleLoading(false);
             if(!success){
                 // handle error
             }
@@ -94,39 +99,67 @@ class Log extends React.Component{
         debug(document.getElementById('msg').innerHTML);
         document.getElementById('msg').value += event.target.innerHTML;
     }
+    onFocus(){
+        this.setState({showEmoji: false});
+    }
     render(){
+        let time, date, lastDate, temp, log = [];
         const id = this.props.currentUser._id;
+        this.props.currentRoom.log.forEach((data,index)=>{
+            date = new Date(data.time);
+            // check if date should be shown
+            if(!lastDate){
+                lastDate = date.getFullYear() + " / " + (date.getMonth() + 1) + " / " + date.getDate();
+                log.push(<p className="date">{"----- " + lastDate + " -----"}</p>);
+            }else if(lastDate!= (temp = date.getFullYear() + " / " + (date.getMonth() + 1) + " / " + date.getDate())){
+                lastDate = temp;
+                log.push(<p className="date">{"----- " + lastDate + " -----"}</p>);
+            }
+            // render msgs
+            time = date.getHours()+":"+ (date.getMinutes() < 10 ? "0"+date.getMinutes():date.getMinutes());
+            if(data._id=="System"){
+                // newUser
+                log.push (<p className="systemMsg">{data.msg + " 加入聊天室囉"}</p>);
+            }else{ 
+                if(data._id == id) log.push (<div key={index}><p className="ownMsg">{data.msg}</p><p className="time ownTime">{time}</p></div>);
+                log.push (<div key={index}><small className="msgName">{data.name}</small><p className="msg">{data.msg}</p><p className="time">{time}</p></div>);
+            }
+        })
         return (
         <div className="log">
             <div id="output" ref ="output" style={this.state.showEmoji?{height: "calc(100% - 20rem)"}:{height: "calc(100% - 5rem)"}}>
-                {this.props.currentRoom.log.map((data,index)=>{
-                    if(data._id == id) return (<p className="ownMsg" key={index}>{data.msg}</p>);
-                    return (<div key={index}><small className="msgName">{data.name}</small><p className="msg" key={index}>{data.msg}</p></div>);
-                })}
+                {log}
             </div>
-            <div className="log_input" style={{height: "5rem"}}>
+            <form className="log_input" style={{height: "5rem"}} onSubmit={this.sendMsg}>
                 <TextField
                     id = "msg"
                     hintText=""
                     style={{width: "calc(100vw - 7rem)"}}
+                    onFocus = {mobileAndTabletcheck()? this.onFocus:null}
                 />
                 <EmojiIcon
                     onClick={this.toggleEmoji}
                     style={{margin: "0.2rem 0.5rem", cursor:"pointer"}}
+                    className="noSelect"
                 />
                 <SendIcon
                     onClick={this.sendMsg}
                     style={{margin: "0.2rem 0.5rem", cursor:"pointer"}}
+                    className="noSelect"
                 />
-                </div>
+                </form>
             <Emoji toggle={this.toggleEmoji} addEmoji={this.addEmoji}/>
         </div>);
     }
   };
 
+//   multiLine={true}
+//   rowsMax={1}
+
   import addLog from "../dispatchers/addLog";
   import {bindActionCreators} from "redux";
   import {connect} from "react-redux";
+  import toggleLoading from "../dispatchers/toggleLoading";
 
   const mapStateToProps=(state)=>{
       return {currentUser: state.currentUser,
@@ -135,7 +168,8 @@ class Log extends React.Component{
     }
     const mapDispatchToProps = (dispatch)=>{
       return bindActionCreators({
-        addLog: addLog
+        addLog: addLog,
+        toggleLoading: toggleLoading
       },dispatch);
     }
   

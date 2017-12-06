@@ -5,6 +5,12 @@ const reducers = {
     (state = null, action)=>{
       return action.type;
     },
+    loading:
+    (state = false, action)=>{
+      if(action.type=="TOGGLELOADING"){
+        return action.payload;
+      }else return state;
+    },
     // Object: _id, name, rooms, valid
     currentUser:
       (state = null, action)=>{

@@ -6,7 +6,7 @@ class AddRoom extends React.Component{
         super(props);
         this.createRoom = this.createRoom.bind(this);
     }
-    createRoom(value,setHint){
+    createRoom(value,setHint,setValue){
         if(value===""){
           setHint("此欄位不可為空白");
           return;
@@ -15,6 +15,8 @@ class AddRoom extends React.Component{
             // insert room
         const api = "room/insert?roomName="+value+"&userId="+that.props.currentUser._id+"&userName="+this.props.currentUser.name;
             debug(api);
+
+            this.props.toggleLoading(true);
             fetch(encodeURI(api),{
                 method: 'get',
                 headers: {
@@ -27,10 +29,15 @@ class AddRoom extends React.Component{
                 if(data.statusText=="Unauthorized") return {success: false};
                 return data.json();
             }).then((data)=>{
+                that.props.toggleLoading(false);
                 if(data.success){
+                    that.props.toggle();
+
+                    // clear value
+                    setValue(null,"");
+
                     // get data of inserted room
                     // update global state: currentUser.rooms
-                    that.props.toggle();
                     that.props.handleRoom("ADDTOROOM", data.result._id, data.result.name);
                     that.props.changeRoom(data.result._id);
                     that.props.toggleRoomSettings(1);
@@ -59,6 +66,7 @@ import currentRoom from "../../dispatchers/currentRoom";
 import setUser from "../../dispatchers/setUser";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import toggleLoading from "../../dispatchers/toggleLoading";
 
 const mapStateToProps=(state)=>{
     return {currentUser: state.currentUser
@@ -67,7 +75,8 @@ const mapStateToProps=(state)=>{
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
       handleRoom: handleRoom,
-      changeRoom: currentRoom
+      changeRoom: currentRoom,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 

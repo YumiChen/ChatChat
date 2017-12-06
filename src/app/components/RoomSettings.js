@@ -51,6 +51,7 @@ class RoomSettings extends React.Component{
       // userId, password
       const that = this, api = "user/addToRoom?userId="+this.state.term+"&password="+this.props.currentRoom._id;
       debug(api);
+      this.props.toggleLoading(true);
       fetch(api,{
         method: 'get',
         headers: {
@@ -63,6 +64,7 @@ class RoomSettings extends React.Component{
         if(data.statusText=="Unauthorized") return {success: false};
         return data.json();
       }).then((data)=>{
+        that.props.toggleLoading(false);
         if(data.success) {
           that.setState({hint: "該會員已被成功加入聊天室!"})
           that.props.changeRoom(data.result);
@@ -81,8 +83,11 @@ class RoomSettings extends React.Component{
     search(term){
       const that = this;
       this.setState({term: term},()=>{
+        if(this.state.term === "") return;
         const api = "user/search?term="+this.state.term;
         debug(api);
+
+        this.props.toggleLoading(true);
         fetch(api,{
           method: 'get',
           headers: {
@@ -95,6 +100,7 @@ class RoomSettings extends React.Component{
           if(data.statusText=="Unauthorized") return {success: false};
           return data.json();
         }).then((data)=>{
+          that.props.toggleLoading(false);
           if(data.success) that.setState({data: data.result});
           else this.setState({hint: "某處發生了錯誤,請稍後再嘗試"})
         });
@@ -113,7 +119,7 @@ class RoomSettings extends React.Component{
               label="關閉"
               primary={true}
               keyboardFocused={true}
-              onClick={props.toggle}
+              onClick={this.toggle}
               />
             ];
       let dataSource = this.state.data.map((data,index)=>{
@@ -126,9 +132,6 @@ class RoomSettings extends React.Component{
         />});
       });  
 
-    if(dataSource === []) dataSource = <MenuItem
-      primaryText= "無符合會員"
-    />;
     console.log(dataSource);
     return (
         <Dialog
@@ -137,12 +140,13 @@ class RoomSettings extends React.Component{
             open={props.open}
             onRequestClose={this.toggle}
             bodyStyle={{padding:0}}
+            autoDetectWindowHeight={false}
         >
         <Tabs initialSelectedIndex={props.initialSelectedIndex}>
         <Tab
           label="聊天室成員"
         >
-          <List>
+          <List style={{maxHeight: "15rem", overflowY:"auto"}}>
             {this.props.currentRoom.members.map((member,index)=>{
               return (<ListItem primaryText={member.name} 
                                 secondaryText={"@"+member._id}
@@ -193,6 +197,7 @@ class RoomSettings extends React.Component{
 import {connect} from "react-redux";
 import currentRoom from "../dispatchers/currentRoom";
 import {bindActionCreators} from "redux";
+import toggleLoading from "../dispatchers/toggleLoading";
 
 const mapStateToProps=(state)=>{
     return {
@@ -201,7 +206,8 @@ const mapStateToProps=(state)=>{
   }
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
-      changeRoom: currentRoom
+      changeRoom: currentRoom,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 

@@ -16,6 +16,8 @@ class ResetPassword extends Component{
         const that = this;
         const api = "sendResetPasswordMail";
         debug(api);
+
+        this.props.toggleLoading(true);
         fetch(encodeURI(api),{
             method: 'post',
             headers: {
@@ -32,6 +34,7 @@ class ResetPassword extends Component{
           }).then((data)=>{
           return data.json();
         }).then((data)=>{
+            that.props.toggleLoading(false);
             if(data.success){
                 setHint("密碼重設信件已寄至您的信箱");
             }else{
@@ -61,6 +64,7 @@ import currentRoom from "../../dispatchers/currentRoom";
 import setUser from "../../dispatchers/setUser";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import toggleLoading from "../../dispatchers/toggleLoading";
 
 const mapStateToProps=(state)=>{
     return {currentUser: state.currentUser,
@@ -70,7 +74,8 @@ const mapStateToProps=(state)=>{
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
       changeRoom: currentRoom,
-      setUser: setUser
+      setUser: setUser,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 

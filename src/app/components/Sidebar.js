@@ -31,24 +31,29 @@ class Sidebar extends React.Component{
   }
   render(){
     const props = this.props;
+    let rooms = props.currentUser.rooms.map((room,index)=>{
+            return (<MenuItem primaryText={room.name} value={room._id} key={index} 
+                      style={props.currentRoom?( props.currentRoom._id == room._id?{color:"brown"}:null):null}  
+                    />);
+          });
+
+    if(rooms.length===0) rooms = <MenuItem primaryText="創建新聊天室ヽ(*^ω^)ﾉ" onClick={props.toggleAddRoom}/>;
     return (
       <div className="sidebar">
       <Drawer
         docked={false}
-        width={200}
+        width={220}
         open={props.open}
         onRequestChange={props.toggle}
-        style={{overflow: "hidden"}}
-        containerStyle={{overflow: "hidden"}}
+        style={{overflowX: "hidden"}}
+        containerStyle={{overflowX: "hidden"}}
         docked={false}
       >
-      <Menu value= { this.state.selectedItem } onItemTouchTap={this.changeRoom}>
-      {this.props.currentUser.rooms.map((room,index)=>{
-        return (<MenuItem primaryText={room.name} value={room._id} key={index} 
-                  style={props.currentRoom?( props.currentRoom._id == room._id?{color:"brown"}:null):null}  
-                />);
-      })}
-      {this.props.currentUser.rooms.length>0 && <Divider />}
+      <Menu value= { this.state.selectedItem } onItemTouchTap={this.changeRoom} style={{height: "calc(100% - 258px)", overflowY:"auto"}}>
+      {rooms}    
+      </Menu>
+      <Menu style={{position: "absolute", bottom: "3rem", width: "100%"}}>
+      <Divider />
       <MenuItem primaryText="創建聊天室" leftIcon={<Add />} 
         onClick={props.toggleAddRoom}/>
         <MenuItem primaryText="進入聊天室" leftIcon={<PersonAdd />} 
@@ -56,7 +61,7 @@ class Sidebar extends React.Component{
         <MenuItem primaryText="帳號管理" leftIcon={<Edit />} 
         onClick={props.toggleUserSettings}/>        
         <MenuItem primaryText="登出帳號" leftIcon={<Forward />} 
-        onClick={this.signOut}/>        
+        onClick={this.signOut}/>    
       </Menu>
     </Drawer>
   

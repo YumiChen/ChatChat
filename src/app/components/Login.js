@@ -65,6 +65,8 @@ class Login extends React.Component{
       if(!this.check()) return;
       const that = this, api = "user/login";
       this.clear();
+
+      this.props.toggleLoading(true);      
       fetch(encodeURI(api),
       {
         method: 'post',
@@ -80,6 +82,8 @@ class Login extends React.Component{
       }).then((data)=>{
         return data.json();
       }).then((data)=>{
+        that.props.toggleLoading(false);
+        
         // set currentUser as data got from response
         if(data.success) {
           sessionStorage.setItem("token",data.token);
@@ -106,6 +110,8 @@ class Login extends React.Component{
       if(!this.check()) return;
       const that = this, api = "user/insert";
       this.clear();
+
+      this.props.toggleLoading(true);      
       fetch(encodeURI(api),{
         method: 'post',
         headers: {
@@ -122,6 +128,7 @@ class Login extends React.Component{
       }).then((data)=>{
         return data.json();
       }).then((data)=>{
+        that.props.toggleLoading(false);
         // set currentUser as data got from response
         if(data.success){
           this.setState({
@@ -203,6 +210,8 @@ class Login extends React.Component{
     }
     resendConfirmationMail(){
       const that = this, api = "resendConfirmationMail/" + sessionStorage.getItem("token");
+      this.props.toggleLoading(true);
+
       fetch(encodeURI(api),{
         method: 'post',
         headers: {
@@ -216,6 +225,7 @@ class Login extends React.Component{
         if(data.statusText=="Unauthorized") return {success: false};
         return data.json();
       }).then((data)=>{
+        that.props.toggleLoading(false);
         // set currentUser as data got from response
         if(data.success){
           this.setState({
@@ -285,7 +295,7 @@ class Login extends React.Component{
               {!login && <p className="hint loginHint">{this.state.checkPasswordMsg}</p>}
               <p className="hint loginHint">{this.state.generalHint}</p>
               <RaisedButton type="submit" label={login?"登入":"註冊"} primary={true} style={{margin: "0.8rem"}} />
-              {login?<p className="loginOrSignupHint">還未註冊?<span onClick={this.changeAction}>註冊為會員</span></p>:<p className="loginOrSignupHint">已經有帳號?<span onClick={this.changeAction}>按此登入</span></p>}
+              {login?<p className="loginOrSignupHint">還未註冊? <span onClick={this.changeAction}>註冊為會員</span></p>:<p className="loginOrSignupHint">已經有帳號? <span onClick={this.changeAction}>按此登入</span></p>}
               {login && <p  className="forgetPassword"
                             style= {{cursor:"pointer"}}
                             onClick={this.toggleForgetPassword} >忘記帳號或密碼?</p> }
@@ -300,13 +310,15 @@ class Login extends React.Component{
 import handleRoom from "../dispatchers/handleRooms";
 import currentRoom from "../dispatchers/currentRoom";
 import setUser from "../dispatchers/setUser";
+import toggleLoading from "../dispatchers/toggleLoading";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 
 
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
-      setUser: setUser
+      setUser: setUser,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 

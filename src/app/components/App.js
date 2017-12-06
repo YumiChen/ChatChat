@@ -8,6 +8,7 @@ import RoomSettings from "./RoomSettings";
 import UserSettings from "./UserSettings";
 import Index from "./Index";
 import Login from "./Login";
+import LoadingAnimation from "./LoadingAnimation";
 
 // detect device
 import detectDevice from "../../detectDevice";
@@ -86,6 +87,7 @@ class App extends Component{
                         initialSelectedIndex={this.state.initialSelectedIndex}
           />}
           {el}
+          {this.props.loading && <LoadingAnimation />}
         </div>
     </div>
     );
@@ -96,7 +98,8 @@ import {connect} from "react-redux";
 
 const mapStateToProps=(state)=>{
     return {currentUser: state.currentUser,
-            currentRoom: state.currentRoom
+            currentRoom: state.currentRoom,
+            loading: state.loading
            };
   }
 

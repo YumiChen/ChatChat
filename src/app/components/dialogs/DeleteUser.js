@@ -15,6 +15,8 @@ class DeleteUser extends Component{
         const that = this;
         const api = "user/delete?_id="+that.props.currentUser._id+"&password="+value;
         debug(api);
+
+        this.props.toggleLoading(true);
         fetch(encodeURI(api),{
             method: 'post',
             headers: {
@@ -26,6 +28,7 @@ class DeleteUser extends Component{
           }).then((data)=>{
           return data.json();
         }).then((data)=>{
+            that.props.toggleLoading(false);
             if(data.success){
                 that.props.toggle();
                 that.props.changeRoom(null);
@@ -59,6 +62,7 @@ import currentRoom from "../../dispatchers/currentRoom";
 import setUser from "../../dispatchers/setUser";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import toggleLoading from "../../dispatchers/toggleLoading";
 
 const mapStateToProps=(state)=>{
     return {currentUser: state.currentUser,
@@ -68,7 +72,8 @@ const mapStateToProps=(state)=>{
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
       changeRoom: currentRoom,
-      setUser: setUser
+      setUser: setUser,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 

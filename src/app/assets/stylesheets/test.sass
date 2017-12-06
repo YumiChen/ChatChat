@@ -2,6 +2,18 @@ $main: #795548
 $sub: #ffab40
 $orange: rgb(255, 194, 96)
 $tomato: rgb(252, 132, 95)
+$bg: "https://s6.postimg.org/dabwjukf5/grass-1529157_1920.jpg"
+$mascot: "https://s6.postimg.org/6dd365wkh/st01.png"
+
+$breakpoints: ("phone":400px,"phone-wide":480px,"phablet":560px,"tablet-small": 640px,"tablet":768px,"tablet-wide":1024px,"desktop":1248px,"desktop-wide": 1440px)
+
+@mixin mq($width, $type: min)
+  @if map_has_key($breakpoints, $width)
+    $width: map_get($breakpoints, $width)
+    @if $type == max
+      $width: $width - 1px
+    @media only screen and (#{$type}-width: $width)
+      @content
 
 *
   font-family: 微軟正黑體
@@ -35,9 +47,11 @@ body
   width: 100vw
   max-width: 100vw
   min-height: 100vh
-  background-image: url(https://s6.postimg.org/quixdzmrl/grass-1529157_1920.jpg)
+  background-image: url(#{$bg})
   background-repeat: no-repeat
   background-size: cover
+
+@import "./loadingAnimation"
 
 // dialog titles
 h3
@@ -47,12 +61,13 @@ h3
 .index
   width: 100vw
   text-align: center
+  overflow-y: auto
 
 .mascot
   width: 15rem
   height: 20rem
   margin: auto
-  background-image: url(https://s6.postimg.org/natkrnaip/st01.png)
+  background-image: url(#{$mascot})
   background-repeat: no-repeat
   background-size: cover
 
@@ -82,25 +97,55 @@ h3
   background-color: rgba(255,255,255,.9)
 
 // style of messages
+.date
+  text-align: center
+  margin: .5rem 0
+  font-size: smaller
+  font-weight: bold
+
+.systemMsg
+  color: $main
+  font-weight: bold
+  text-align: center
+  padding: 0.3rem 0
+  width: 70%
+  font-size: smaller
+  margin: .5rem auto
+  background-color: rgba(255,255,255,.7)
+  border-radius: 1rem
+  word-wrap: break-word
+  
 .msg
   background-color: rgba(255,255,255,.7)
   border-radius: 1rem
   padding: .7rem 1rem
   margin-top: .2rem
-  // width: 12rem
+  margin-bottom: 0rem
+  max-width: 70%
   word-wrap: break-word
   display: table
+
 .msgName
-  padding: 0 .8rem
-  width: 12rem
+  padding: 0 .5rem
   word-wrap: break-word
+
+.time
+  padding: 0 .5rem
+  margin: 0
+  margin: .2rem 0 .5rem
+  font-size: x-small
+
+.ownTime
+  text-align: right
 
 .ownMsg
   display: table
+  margin-bottom: 0rem
   background-color: rgba(178, 233, 247,0.7)
   border-radius: 1em
   padding: .7rem 1em
-  // width: 12rem
+  max-width: 70%
+  margin-top: .2rem
   margin-left: auto
   word-wrap: break-word
 
@@ -108,6 +153,7 @@ h3
 .login
   width: 100vw
   text-align: center
+  overflow-y: auto
 
 .loginTitle
   &::after
@@ -116,19 +162,19 @@ h3
 .loginOrSignupHint
   color: white
   & span
-    color: orange
+    // color: #670404
     cursor: pointer
+    text-decoration: underline
     &:hover
       color: #670404
       font-weight: bold
-      text-decoration: underline
 
 .forgetPassword
-  color: orange
+  color: white
+  text-decoration: underline
   &:hover
     color: #670404
     font-weight: bold
-    text-decoration: underline
 
 // room settings
 .showRoomPassword
@@ -141,7 +187,7 @@ h3
 
 // general hints
 .hint
-  margin: .5rem
+  margin: .9rem
   color: red
   font-weight: bold
   font-size: .9rem
@@ -155,7 +201,7 @@ $emojiHeight: 3rem
 .emoji
   cursor: pointer 
   font-size: 1.7rem
-  width: 3.5rem 
+  width: calc(100% / 15)
   height: $emojiHeight
   line-height: $emojiHeight
   display: inline-block 
@@ -164,7 +210,7 @@ $emojiHeight: 3rem
     background-color: LightGray
 
 .kaomoji
-  width: 6.9rem
+  width: calc(100% / 6)
   height: $emojiHeight
   overflow: hidden
   line-height: $emojiHeight
@@ -174,6 +220,17 @@ $emojiHeight: 3rem
   &:hover
     background-color: LightGray
     color: deepPink
+
++mq('desktop',min)
+  .emoji
+    width: calc(100% / 24)
+  .kaomoji
+    width: calc(100% / 12)
++mq('phone-wide',max)
+  .emoji
+    width: calc(100% / 6)
+  .kaomoji
+    width: calc(100% / 3)
 
 .confirmationHint
   width: 256px

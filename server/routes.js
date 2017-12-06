@@ -22,7 +22,7 @@ router.get("/404" , function(req,res){
 // id, password
 router.post("/user/delete", passportService.authenticate,function(req,res){
     try{
-      User.findOne({_id: req.query._id}, null, function(err, user) {
+      User.findOne({_id: req.query._id, valid: true, confirmed: true}, null, function(err, user) {
         if (err) throw err;
         // check password
         if(!user){
@@ -98,11 +98,9 @@ router.get("/room/insert", passportService.authenticate,function(req,res){
     var newRoom = new Room({
       name: name,
       members:[{_id:userId,name:userName}],
-      log: [],
+      log: [{_id:"System", name: "newUser", msg: userId}],
       valid: true
     }), result;
-
-    newRoom.isNew = true;
 
     try{
       // insert into room collection
@@ -239,8 +237,9 @@ router.get("/user/addToRoom", passportService.authenticate,function(req,res){
                   Room.findOneAndUpdate({_id: new ObjectId(password)}, {$addToSet: {members:{_id:userId,name:user.name}}}, null, function(err, resp) {
                     if (err) throw err;
                     // 順便推播有新成員加入
-                    Room.findOne({_id: new ObjectId(password)}, null, function(err, resp) {
-                      if (err) throw err;
+                    resp.log.push({_id: "System", name: "newUser", msg: userId});
+                    resp.save(function(err, resp){
+                      if(err) throw err;
                       res.setHeader('Content-Type', 'application/json');
                       res.send(JSON.stringify({ success: true, result: resp }));
                     });

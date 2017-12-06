@@ -6,7 +6,7 @@ class EnterRoom extends Component{
         super(props);
         this.enterRoom = this.enterRoom.bind(this);
     }
-    enterRoom(value,setHint){
+    enterRoom(value,setHint, setValue){
       if(value===""){
         setHint("此欄位不可為空白");
         return;
@@ -23,6 +23,8 @@ class EnterRoom extends Component{
           // insert room
           const api = "user/addToRoom?userId="+that.props.currentUser._id +"&password="+value;
           debug(api);
+
+          this.props.toggleLoading(true);
           fetch(encodeURI(api),{
             method: 'get',
             headers: {
@@ -35,6 +37,8 @@ class EnterRoom extends Component{
             if(data.statusText=="Unauthorized") return {success: false};
             return data.json();
           }).then((data)=>{
+            that.props.toggleLoading(false);
+
             if(data.success){
               index = this.props.currentUser.rooms.findIndex((el)=>{
                 return el._id == data.result._id;
@@ -44,6 +48,10 @@ class EnterRoom extends Component{
                 return;
               }
               that.props.toggle();
+              
+              // clear value
+              setValue(null,"");
+              
               that.props.handleRoom("ADDTOROOM", data.result._id, data.result.name);
               that.props.changeRoom(data.result._id);
             }else{
@@ -70,6 +78,7 @@ import currentRoom from "../../dispatchers/currentRoom";
 import setUser from "../../dispatchers/setUser";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import toggleLoading from "../../dispatchers/toggleLoading";
 
 const mapStateToProps=(state)=>{
     return {currentUser: state.currentUser};
@@ -77,7 +86,8 @@ const mapStateToProps=(state)=>{
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
       handleRoom: handleRoom,
-      changeRoom: currentRoom
+      changeRoom: currentRoom,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 

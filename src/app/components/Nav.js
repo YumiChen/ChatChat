@@ -24,12 +24,17 @@ class Nav extends React.Component{
     }
     toIndex(){
         if(this.props.currentRoom!=null) this.props.changeRoom(null);
+        this.props.toggleLoading(false);
     }
     leaveRoom(){
         const currentRoom = this.props.currentRoom,
               currentUser = this.props.currentUser,
+              that = this,
               api = "user/leaveRoom?userId="+currentUser._id+"&userName="+currentUser.name+"&roomId="+currentRoom._id+"&roomName="+currentRoom.name;
+        
         debug("JWT "+sessionStorage.getItem("token"));
+        
+        this.props.toggleLoading(true);
         fetch(encodeURI(api),{
             method: 'get',
             headers: {
@@ -43,6 +48,7 @@ class Nav extends React.Component{
           if(data.statusText=="Unauthorized") return {success: false};
           return data.json();
         }).then(({success})=>{
+            this.props.toggleLoading(false);
           if(!success) {
             // handle error
 
@@ -57,7 +63,7 @@ class Nav extends React.Component{
 
     }
     render(){
-        const options = ["聊天室成員","取得邀請碼"];
+        const options = ["聊天室成員","取得邀請碼","邀請成員"];
         const menuItems= options.map((option,index)=>{
             return (<MenuItem primaryText={option} onClick={()=>{this.props.toggleRoomSettings(index)}} key={index}/>);
         }),
@@ -116,6 +122,7 @@ import {connect} from "react-redux";
 import currentRoom from "../dispatchers/currentRoom";
 import {bindActionCreators} from "redux";
 import handleRoom from "../dispatchers/handleRooms";
+import toggleLoading from "../dispatchers/toggleLoading";
 
 const mapStateToProps=(state)=>{
     return {currentUser: state.currentUser,
@@ -124,7 +131,8 @@ const mapStateToProps=(state)=>{
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
         handleRoom: handleRoom,
-      changeRoom: currentRoom
+      changeRoom: currentRoom,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 

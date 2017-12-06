@@ -23,7 +23,8 @@ class UserSettings extends React.Component{
         this.toggleDeleteUser = this.toggleDeleteUser.bind(this);
         this.toggleResetPassword = this.toggleResetPassword.bind(this);
     }
-    updateUserName(){
+    updateUserName(event){
+        event.preventDefault();
         if(this.state.userName===""){
           this.setState({userNameHint: "此欄位不可為空白"});
           return;
@@ -32,6 +33,8 @@ class UserSettings extends React.Component{
             // insert room
             const api = "user/updateName?_id="+this.props.currentUser._id+"&name="+this.state.userName;
             debug(api);
+
+            this.props.toggleLoading(true);
             fetch(encodeURI(api),{
                 method: 'get',
                 headers: {
@@ -44,9 +47,10 @@ class UserSettings extends React.Component{
                 if(data.statusText=="Unauthorized") return {success: false};
               return data.json();
             }).then((data)=>{
-              that.props.toggle();
+              that.props.toggleLoading(false);
+              
               that.props.setUser("RESET",data.result);
-              that.setState({userName: this.props.currentUser.name, userNameHint: ""});
+              that.setState({userName: this.props.currentUser.name, userNameHint: "暱稱修改成功!"});
               if(this.props.currentRoom)that.props.changeRoom(this.props.currentRoom._id);
             });
     }
@@ -83,14 +87,16 @@ class UserSettings extends React.Component{
         modal={false}
         actions={actions}
         open={props.open}
-        onRequestClose={props.toggle}
+        onRequestClose={this.toggle}
         bodyStyle={{padding:0}}
+        autoDetectWindowHeight={false}
         >
             <Tabs initialSelectedIndex={props.initialSelectedIndex}
             tabTemplateStyle={{textAlign: "center"}}>
                 <Tab
                 label="個人資料"
                 >
+                <form onSubmit={this.updateUserName}>
                 <TextField
                 floatingLabelText="暱稱"
                 onChange={this.setUserName}
@@ -105,6 +111,7 @@ class UserSettings extends React.Component{
                     keyboardFocused={true}
                     onClick={this.updateUserName}
                     />
+                </form>
                 </Tab>
                 <Tab
                 label="帳號管理"
@@ -139,6 +146,7 @@ import currentRoom from "../dispatchers/currentRoom";
 import setUser from "../dispatchers/setUser";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
+import toggleLoading from "../dispatchers/toggleLoading";
 
 const mapStateToProps=(state)=>{
     return {currentUser: state.currentUser,
@@ -148,7 +156,8 @@ const mapStateToProps=(state)=>{
   const mapDispatchToProps = (dispatch)=>{
     return bindActionCreators({
       changeRoom: currentRoom,
-      setUser: setUser
+      setUser: setUser,
+      toggleLoading: toggleLoading
     },dispatch);
   }
 
