@@ -103,26 +103,26 @@ class Log extends React.Component{
         this.setState({showEmoji: false});
     }
     render(){
-        let time, date, lastDate, temp, log = [];
+        let time, date, lastDate, temp, log = [], i = -1;
         const id = this.props.currentUser._id;
         this.props.currentRoom.log.forEach((data,index)=>{
             date = new Date(data.time);
             // check if date should be shown
             if(!lastDate){
                 lastDate = date.getFullYear() + " / " + (date.getMonth() + 1) + " / " + date.getDate();
-                log.push(<p className="date">{"----- " + lastDate + " -----"}</p>);
+                log.push(<p className="date" key={i++}>{"----- " + lastDate + " -----"}</p>);
             }else if(lastDate!= (temp = date.getFullYear() + " / " + (date.getMonth() + 1) + " / " + date.getDate())){
                 lastDate = temp;
-                log.push(<p className="date">{"----- " + lastDate + " -----"}</p>);
+                log.push(<p className="date" key={i++}>{"----- " + lastDate + " -----"}</p>);
             }
             // render msgs
             time = date.getHours()+":"+ (date.getMinutes() < 10 ? "0"+date.getMinutes():date.getMinutes());
             if(data._id=="System"){
                 // newUser
-                log.push (<p className="systemMsg">{data.msg + " 加入聊天室囉"}</p>);
+                log.push (<p className="systemMsg" key={i++}>{data.msg + " 加入聊天室囉"}</p>);
             }else{ 
-                if(data._id == id) log.push (<div key={index}><p className="ownMsg">{data.msg}</p><p className="time ownTime">{time}</p></div>);
-                log.push (<div key={index}><small className="msgName">{data.name}</small><p className="msg">{data.msg}</p><p className="time">{time}</p></div>);
+                if(data._id == id) log.push (<div key={i++}><p className="ownMsg">{data.msg}</p><p className="time ownTime">{time}</p></div>);
+                else log.push (<div key={i++}><small className="msgName">{data.name}</small><p className="msg">{data.msg}</p><p className="time">{time}</p></div>);
             }
         })
         return (

@@ -72,7 +72,7 @@ router.post("/user/delete", passportService.authenticate,function(req,res){
 router.get("/user/search", passportService.authenticate,function(req,res){
   var term = req.query.term, reg = new RegExp(term, 'i')
   try{
-    User.find({$or: [{_id: {$regex: reg}}, {name: {$regex: reg}}]},{name: true}).sort().limit(10).exec(function(err, result) {
+    User.find({ $and: [ {$or:[{ _id:{$regex: reg}}, {name: {$regex: reg}}]} , {_id: {$not: /System/}} ] },{name: true}).sort().limit(10).exec(function(err, result) {
       if(err) throw err;
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({ success: true, result: result }));

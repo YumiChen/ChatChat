@@ -49,16 +49,16 @@ class Sidebar extends React.Component{
         containerStyle={{overflowX: "hidden"}}
         docked={false}
       >
-      <Menu value= { this.state.selectedItem } onItemTouchTap={this.changeRoom} style={{height: "calc(100% - 258px)", overflowY:"auto"}}>
+      <Menu value= { this.state.selectedItem } onItemTouchTap={this.changeRoom} style={{height: "calc(100% - 335px)", overflowY:"auto"}}>
       {rooms}    
       </Menu>
-      <Menu style={{position: "absolute", bottom: "3rem", width: "100%"}}>
-      <Divider />
-      <MenuItem primaryText="創建聊天室" leftIcon={<Add />} 
+      <Menu style={{position:"absolute",height: "250px", bottom: "100px"}}>
+      <Divider/>
+      <MenuItem primaryText="創建新聊天室" leftIcon={<Add />} 
         onClick={props.toggleAddRoom}/>
-        <MenuItem primaryText="進入聊天室" leftIcon={<PersonAdd />} 
+        <MenuItem primaryText="進入新聊天室" leftIcon={<PersonAdd />} 
         onClick={props.toggleEnterRoom}/>
-        <MenuItem primaryText="帳號管理" leftIcon={<Edit />} 
+        <MenuItem primaryText="帳號資料管理" leftIcon={<Edit />} 
         onClick={props.toggleUserSettings}/>        
         <MenuItem primaryText="登出帳號" leftIcon={<Forward />} 
         onClick={this.signOut}/>    

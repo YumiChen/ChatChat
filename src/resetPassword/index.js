@@ -62,7 +62,7 @@ class App extends React.Component{
         var params = (window.location.href).split("/"),
             token = params[params.length-1];
 
-        var api = "/a/resetPassword", that = this;
+        var api = "/resetPassword", that = this;
         fetch(api,{
             method: 'post',
             headers: {
@@ -78,6 +78,7 @@ class App extends React.Component{
             return data.json();
         }).then(function(data){
             if(data.success){
+                if(data.statusText=="Unauthorized") return {success: false};
                 // success
                 location.href = config.server;
             }else{
