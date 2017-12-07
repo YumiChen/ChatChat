@@ -106,7 +106,7 @@ class UserSettings extends React.Component{
                 <p className="hint" >{this.state.userNameHint}</p>
                     <RaisedButton
                     label="修改"
-                    style={{margin: ".5rem"}}
+                    style={{margin: "8px"}}
                     primary={true}
                     keyboardFocused={true}
                     onClick={this.updateUserName}
@@ -119,7 +119,7 @@ class UserSettings extends React.Component{
                 <RaisedButton
                 label="修改密碼"
                 primary={true}
-                style={{margin: ".5rem"}}
+                style={{margin: "8px"}}
                 keyboardFocused={true}
                 onClick={this.toggleResetPassword}
                 />
@@ -128,7 +128,7 @@ class UserSettings extends React.Component{
                 label="刪除帳號"
                 primary={true}
                 keyboardFocused={true}
-                style={{margin: ".5rem"}}
+                style={{margin: "8px"}}
                 onClick={this.toggleDeleteUser}
                 />   
                 </Tab>

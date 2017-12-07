@@ -8,6 +8,7 @@ import RoomSettings from "./RoomSettings";
 import UserSettings from "./UserSettings";
 import Index from "./Index";
 import Login from "./Login";
+import DisplaySettings from "./DisplaySettings";
 import LoadingAnimation from "./LoadingAnimation";
 
 // detect device
@@ -23,13 +24,15 @@ class App extends Component{
       showRoomSettings: false,
       showEnterRoom: false,
       showUserSettings: false,
-      initialSelectedIndex: -1
+      initialSelectedIndex: -1,
+      showDisplaySettings: false
   };
   this.toggleNav = this.toggleNav.bind(this);
   this.toggleAddRoom = this.toggleAddRoom.bind(this);
   this.toggleRoomSettings = this.toggleRoomSettings.bind(this);
   this.toggleEnterRoom = this.toggleEnterRoom.bind(this);
   this.toggleUserSettings = this.toggleUserSettings.bind(this);
+  this.toggleDisplaySettings = this.toggleDisplaySettings.bind(this);
   }
   toggleNav(){
     this.setState({showNav:!this.state.showNav});
@@ -57,6 +60,11 @@ class App extends Component{
       this.setState({showRoomSettings:!this.state.showRoomSettings});
     }
   }
+  toggleDisplaySettings(){
+    this.setState({showDisplaySettings:!this.state.showDisplaySettings},()=>{
+      if(this.state.showDisplaySettings) this.setState({showNav: false});
+    });
+  }
   componentDidMount(){
     if(mobileAndTabletcheck()){
       // document.body.style.height = window.innerHeight +'px';
@@ -79,10 +87,11 @@ class App extends Component{
         <Nav toggleNav={this.toggleNav} toggleRoomSettings={this.toggleRoomSettings}/>
         <div className="mainContainer">
           {loggedIn && <Sidebar open={this.state.showNav} toggle={this.toggleNav} toggleAddRoom={this.toggleAddRoom} toggleEnterRoom={this.toggleEnterRoom} toggleUserSettings={this.toggleUserSettings}
-                        />}
+                                toggleDisplaySettings={this.toggleDisplaySettings}/>}
           {loggedIn && <AddRoom  open={this.state.showAddRoom} toggle={this.toggleAddRoom} toggleRoomSettings={this.toggleRoomSettings}/>}
           {loggedIn && <EnterRoom  open={this.state.showEnterRoom} toggle={this.toggleEnterRoom}/>}
           {loggedIn && <UserSettings  open={this.state.showUserSettings} toggle={this.toggleUserSettings}/>}
+          {loggedIn && <DisplaySettings open = {this.state.showDisplaySettings} toggle={this.toggleDisplaySettings}/>}
           {this.props.currentRoom!=null && <RoomSettings open={this.state.showRoomSettings} toggle={this.toggleRoomSettings}
                         initialSelectedIndex={this.state.initialSelectedIndex}
           />}

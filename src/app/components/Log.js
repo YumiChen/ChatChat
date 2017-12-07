@@ -33,8 +33,11 @@ class Log extends React.Component{
         this.autoScroll();
     }
     componentDidUpdate(){
+        const that = this;
         debug("componentDidUpdate");
-        this.autoScroll();
+        setTimeout(function(){
+            that.autoScroll();
+        },600);
     }
     sendMsg(event){
         event.preventDefault();
@@ -127,24 +130,24 @@ class Log extends React.Component{
         })
         return (
         <div className="log">
-            <div id="output" ref ="output" style={this.state.showEmoji?{height: "calc(100% - 20rem)"}:{height: "calc(100% - 5rem)"}}>
+            <div id="output" ref ="output" style={this.state.showEmoji?{height: "calc(100% - 320px)"}:{height: "calc(100% - 80px)"}}>
                 {log}
             </div>
-            <form className="log_input" style={{height: "5rem"}} onSubmit={this.sendMsg}>
+            <form className="log_input" style={{height: "80px"}} onSubmit={this.sendMsg}>
                 <TextField
                     id = "msg"
                     hintText=""
-                    style={{width: "calc(100vw - 7rem)"}}
+                    style={{width: "calc(100vw - 112px)"}}
                     onFocus = {mobileAndTabletcheck()? this.onFocus:null}
                 />
                 <EmojiIcon
                     onClick={this.toggleEmoji}
-                    style={{margin: "0.2rem 0.5rem", cursor:"pointer"}}
+                    style={{margin: "3px 8px", cursor:"pointer"}}
                     className="noSelect"
                 />
                 <SendIcon
                     onClick={this.sendMsg}
-                    style={{margin: "0.2rem 0.5rem", cursor:"pointer"}}
+                    style={{margin: "3px 8px", cursor:"pointer"}}
                     className="noSelect"
                 />
                 </form>

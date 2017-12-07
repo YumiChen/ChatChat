@@ -4,7 +4,7 @@ const config = require('../config');
 const User = require('./models/User');
 
 // _id, email
-function tokenForUser(user) {
+function tokenThatExpires(user) {
   const timestamp = new Date().getTime();
   return jwt.sign({ sub: user._id, iat: timestamp }, config.secret,{
     expiresIn: '1m'
@@ -28,7 +28,7 @@ exports.sendForgetPasswordEmail = function(req,res){
       return;
     }else{
 
-      var url = config.server + "reset/" + tokenForUser(user),
+      var url = config.server + "reset/" + tokenThatExpires(user),
       mailOptions = {
         from: config.mail.user,
         to: email,
@@ -96,7 +96,7 @@ exports.sendResetPasswordMail = function(req,res){
           res.setHeader('Content-Type', 'application/json');
           res.send(JSON.stringify({ success: false, err: "wrongPassword" }));
         }else{
-          var url = config.server + "reset/" + tokenForUser(user),
+          var url = config.server + "reset/" + tokenThatExpires(user),
           mailOptions = {
             from: config.mail.user,
             to: user.email,
@@ -199,7 +199,7 @@ exports.resendConfirmationMail = function(req, res){
 
         console.log(user);
 
-        var url = config.server + "confirmation/" + tokenForUser(user),
+        var url = config.server + "confirmation/" + tokenThatExpires(user),
         mailOptions = {
           from: config.mail.user,
           to: email,

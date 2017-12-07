@@ -294,7 +294,7 @@ class Login extends React.Component{
               />}
               {!login && <p className="hint loginHint">{this.state.checkPasswordMsg}</p>}
               <p className="hint loginHint">{this.state.generalHint}</p>
-              <RaisedButton type="submit" label={login?"登入":"註冊"} primary={true} style={{margin: "0.8rem"}} />
+              <RaisedButton type="submit" label={login?"登入":"註冊"} primary={true} style={{margin: "13px"}} />
               {login?<p className="loginOrSignupHint">還未註冊? <span onClick={this.changeAction}>註冊為會員</span></p>:<p className="loginOrSignupHint">已經有帳號? <span onClick={this.changeAction}>按此登入</span></p>}
               {login && <p  className="forgetPassword"
                             style= {{cursor:"pointer"}}

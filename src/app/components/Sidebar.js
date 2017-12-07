@@ -3,6 +3,7 @@ import {List, ListItem} from 'material-ui/List';
 import RemoveRedEye from 'material-ui/svg-icons/image/remove-red-eye';
 import PersonAdd from 'material-ui/svg-icons/social/person-add';
 import Edit from 'material-ui/svg-icons/editor/mode-edit';
+import EyeIcon from 'material-ui/svg-icons/image/remove-red-eye';
 import Forward from 'material-ui/svg-icons/content/forward';
 import Divider from 'material-ui/Divider';
 import Add from 'material-ui/svg-icons/content/add';
@@ -49,17 +50,19 @@ class Sidebar extends React.Component{
         containerStyle={{overflowX: "hidden"}}
         docked={false}
       >
-      <Menu value= { this.state.selectedItem } onItemTouchTap={this.changeRoom} style={{height: "calc(100% - 335px)", overflowY:"auto"}}>
+      <Menu value= { this.state.selectedItem } onItemTouchTap={this.changeRoom} style={{height: "calc(100% - 320px)", overflowY:"auto"}}>
       {rooms}    
       </Menu>
-      <Menu style={{position:"absolute",height: "250px", bottom: "100px"}}>
+      <Menu style={{position:"absolute", bottom: "15px",height: "320px"}}>
       <Divider/>
       <MenuItem primaryText="創建新聊天室" leftIcon={<Add />} 
         onClick={props.toggleAddRoom}/>
         <MenuItem primaryText="進入新聊天室" leftIcon={<PersonAdd />} 
         onClick={props.toggleEnterRoom}/>
         <MenuItem primaryText="帳號資料管理" leftIcon={<Edit />} 
-        onClick={props.toggleUserSettings}/>        
+        onClick={props.toggleUserSettings}/> 
+        <MenuItem primaryText="顯示設定" leftIcon={<EyeIcon />} 
+        onClick={props.toggleDisplaySettings}/>       
         <MenuItem primaryText="登出帳號" leftIcon={<Forward />} 
         onClick={this.signOut}/>    
       </Menu>

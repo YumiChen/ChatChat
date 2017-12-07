@@ -111,8 +111,8 @@ class RoomSettings extends React.Component{
       this.setState({data: [], hint:"", term: ""});
     }
     render(){
-      const style = {margin: "1rem"},
-            titleStyle = {padding: "0 1rem"},
+      const style = {margin: "16px"},
+            titleStyle = {padding: "0 16px"},
             props = this.props,
             actions = [
               <FlatButton
@@ -146,7 +146,7 @@ class RoomSettings extends React.Component{
         <Tab
           label="聊天室成員"
         >
-          <List style={{maxHeight: "15rem", overflowY:"auto"}}>
+          <List style={{maxHeight: "240px", overflowY:"auto"}}>
             {this.props.currentRoom.members.map((member,index)=>{
               return (<ListItem primaryText={member.name} 
                                 secondaryText={"@"+member._id}

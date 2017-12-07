@@ -2,7 +2,7 @@ $main: #795548
 $sub: #ffab40
 $orange: rgb(255, 194, 96)
 $tomato: rgb(252, 132, 95)
-$bg: "https://s6.postimg.org/dabwjukf5/grass-1529157_1920.jpg"
+$bg: "https://s6.postimg.org/xafy4m2f5/grass-1529157_1920_1.jpg"
 $mascot: "https://s6.postimg.org/6dd365wkh/st01.png"
 
 $breakpoints: ("phone":400px,"phone-wide":480px,"phablet":560px,"tablet-small": 640px,"tablet":768px,"tablet-wide":1024px,"desktop":1248px,"desktop-wide": 1440px)
@@ -62,10 +62,11 @@ h3
   width: 100vw
   text-align: center
   overflow-y: auto
+  padding: 0 16px
 
 .mascot
-  width: 15rem
-  height: 20rem
+  width: 240px
+  height: 320px
   margin: auto
   background-image: url(#{$mascot})
   background-repeat: no-repeat
@@ -84,14 +85,14 @@ h3
   height: 100%
 
 #output
-  padding: 1rem
+  padding: 16px
   overflow: hidden
   overflow-y: auto
 
 
 .log_input
   width: 100%
-  padding: 1rem
+  padding: 16px
   box-shadow: 0px -2px 5px 2px rgba(0,0,0,.1)
   white-space: nowrap
   background-color: rgba(255,255,255,.9)
@@ -99,7 +100,7 @@ h3
 // style of messages
 .date
   text-align: center
-  margin: .5rem 0
+  margin: 8px 0
   font-size: smaller
   font-weight: bold
 
@@ -107,45 +108,45 @@ h3
   color: $main
   font-weight: bold
   text-align: center
-  padding: 0.3rem 0
+  padding: 5px 0
   width: 70%
   font-size: smaller
-  margin: .5rem auto
+  margin: 8px auto
   background-color: rgba(255,255,255,.7)
-  border-radius: 1rem
+  border-radius: 16px
   word-wrap: break-word
   
 .msg
   background-color: rgba(255,255,255,.7)
-  border-radius: 1rem
-  padding: .7rem 1rem
-  margin-top: .2rem
-  margin-bottom: 0rem
+  border-radius: 16px
+  padding: 11px 16px
+  margin-top: 3px
+  margin-bottom: 0
   max-width: 70%
   word-wrap: break-word
   display: table
 
 .msgName
-  padding: 0 .5rem
+  padding: 0 8px
   word-wrap: break-word
 
 .time
-  padding: 0 .5rem
+  padding: 0 8px
   margin: 0
-  margin: .2rem 0 .5rem
-  font-size: x-small
+  margin: 3px 0 8px
+  // font-size: x-small
 
 .ownTime
   text-align: right
 
 .ownMsg
   display: table
-  margin-bottom: 0rem
+  margin-bottom: 0
   background-color: rgba(178, 233, 247,0.7)
-  border-radius: 1em
-  padding: .7rem 1em
+  border-radius: 16px
+  padding: 11px 16px
   max-width: 70%
-  margin-top: .2rem
+  margin-top: 3px
   margin-left: auto
   word-wrap: break-word
 
@@ -180,14 +181,14 @@ h3
 .showRoomPassword
   text-align: center
   width: 60%
-  border-radius: .2rem
-  padding: 0.5rem
-  margin: .5rem 0
+  border-radius: 3px
+  padding: 8px
+  margin: 8px 0
   border: solid 1px $main
 
 // general hints
 .hint
-  margin: .9rem
+  margin: 14px
   color: red
   font-weight: bold
   font-size: .9rem
@@ -196,11 +197,11 @@ h3
   -webkit-touch-callout: none
   user-select: none
 
-$emojiHeight: 3rem
+$emojiHeight: 48px
 
 .emoji
   cursor: pointer 
-  font-size: 1.7rem
+  font-size: 27px
   width: calc(100% / 10)
   height: $emojiHeight
   line-height: $emojiHeight
@@ -213,6 +214,7 @@ $emojiHeight: 3rem
   width: calc(100% / 6)
   height: $emojiHeight
   overflow: hidden
+  font-size: 16px
   line-height: $emojiHeight
   cursor: pointer
   display: inline-block 
@@ -236,11 +238,11 @@ $emojiHeight: 3rem
   width: 256px
   margin: auto
   background-color: rgba(255,255,255,.7)
-  border-radius: 1rem
-  padding: 0.5rem 0
+  border-radius: 16px
+  padding: 8px 0
   & p
     width: 100%
-    margin: .2rem 0
+    margin: 3px 0
   & p:nth-child(2)
     cursor: pointer
     &:hover

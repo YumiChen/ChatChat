@@ -54,7 +54,6 @@ class BaseDialog extends React.Component{
         open={this.props.open}
         onRequestClose={this.toggle}
         titleStyle={{padding: "18px 20px 0 20px", fontWeight: "bold"}}
-        contentStyle={{maxWidth: "none"}}
         autoDetectWindowHeight={false}
         >
         <form onSubmit={this.handle}>

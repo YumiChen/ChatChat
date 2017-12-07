@@ -4,6 +4,8 @@ var BodyParser = require( 'body-parser' );
 var router = require("./server/routes");
 var config = require("./config");
 var passportService = require("./server/passport");
+var compression = require("compression");
+
 process.env.NODE_ENV = config.env;
 
 // App setup
@@ -13,10 +15,11 @@ var server = app.listen(port, function(){
     console.log('listening for requests on port ' + port);
 });
 
+// compression
+app.use(compression());
 
 // Static files
 app.use(express.static('public'));
-
 
 app.use( BodyParser.urlencoded( { extended: false } ) );
 app.use( BodyParser.json() );

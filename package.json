@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clientdev": "webpack-dev-server --devtool eval --progress --colors --hot --content-base build",
-    "serverdev": "nodemon server.js",
+    "dev": "nodemon server.js",
     "build": "webpack -p",
     "start": "node server.js"
   },
@@ -21,11 +20,10 @@
   },
   "homepage": "",
   "dependencies": {
-    "add-to-homescreen": "^3.2.6",
     "bcrypt-nodejs": "^0.0.3",
+    "compression": "^1.7.1",
     "express": "^4.15.2",
     "jsonwebtoken": "^8.1.0",
-    "jwt-simple": "^0.5.1",
     "material-ui": "^0.19.4",
     "mongoose": "^4.13.5",
     "nodemailer": "^4.4.0",
