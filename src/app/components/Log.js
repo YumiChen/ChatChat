@@ -33,11 +33,8 @@ class Log extends React.Component{
         this.autoScroll();
     }
     componentDidUpdate(){
-        const that = this;
         debug("componentDidUpdate");
-        setTimeout(function(){
-            that.autoScroll();
-        },600);
+        this.autoScroll();
     }
     sendMsg(event){
         event.preventDefault();

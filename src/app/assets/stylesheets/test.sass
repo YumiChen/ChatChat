@@ -2,8 +2,8 @@ $main: #795548
 $sub: #ffab40
 $orange: rgb(255, 194, 96)
 $tomato: rgb(252, 132, 95)
-$bg: "https://s6.postimg.org/xafy4m2f5/grass-1529157_1920_1.jpg"
-$mascot: "https://s6.postimg.org/6dd365wkh/st01.png"
+$bg: "https://s6.postimg.cc/6bcjsfjwx/chatchat_bg.jpg"
+$mascot: "https://s6.postimg.cc/6dd365wkh/st01.png"
 
 $breakpoints: ("phone":400px,"phone-wide":480px,"phablet":560px,"tablet-small": 640px,"tablet":768px,"tablet-wide":1024px,"desktop":1248px,"desktop-wide": 1440px)
 
@@ -89,7 +89,6 @@ h3
   overflow: hidden
   overflow-y: auto
 
-
 .log_input
   width: 100%
   padding: 16px
@@ -115,7 +114,7 @@ h3
   background-color: rgba(255,255,255,.7)
   border-radius: 16px
   word-wrap: break-word
-  
+  transition: unset
 .msg
   background-color: rgba(255,255,255,.7)
   border-radius: 16px
@@ -125,20 +124,21 @@ h3
   max-width: 70%
   word-wrap: break-word
   display: table
-
+  transition: unset
+  font-size: 1rem
 .msgName
   padding: 0 8px
   word-wrap: break-word
-
+  transition: unset
 .time
   padding: 0 8px
   margin: 0
   margin: 3px 0 8px
-  // font-size: x-small
-
+  font-size: 0.7rem
+  transition: unset
 .ownTime
   text-align: right
-
+  
 .ownMsg
   display: table
   margin-bottom: 0
@@ -149,7 +149,9 @@ h3
   margin-top: 3px
   margin-left: auto
   word-wrap: break-word
-
+  transition: unset
+  font-size: 1rem
+  
 // login/ signup page
 .login
   width: 100vw

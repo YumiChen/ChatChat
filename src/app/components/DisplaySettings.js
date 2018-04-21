@@ -14,13 +14,13 @@ export default class DisplaySettings extends Component {
       this.handlefontSize = this.handlefontSize.bind(this);
       this.toggleBold = this.toggleBold.bind(this);
       this.setDisplay = this.setDisplay.bind(this);
+      this.close = this.close.bind(this);
   }
   handlefontSize(event, value){
     this.setState({fontSize: value});
   }
   toggleBold(e, checked){
     this.setState({bold: checked});
-
   }
   setDisplay(){
     const el = document.querySelector("html");
@@ -32,19 +32,27 @@ export default class DisplaySettings extends Component {
 
     this.props.toggle();
   }
+  close(){
+    const style = document.querySelector("html").style;
+    this.props.toggle();
+    this.setState({
+      fontSize: parseFloat(style.fontSize),
+      bold: (style.fontWeight == "bold")
+    });
+  }
   render() {
     const actions = [
-      <FlatButton
-      label="確定"
-      primary={true}
-      keyboardFocused={true}
-      onClick={this.setDisplay}
-      />,
         <FlatButton
-        label="關閉"
+        label="取消"
         primary={true}
         keyboardFocused={true}
-        onClick={this.props.toggle}
+        onClick={this.close}
+        />,
+        <FlatButton
+        label="確定"
+        primary={true}
+        keyboardFocused={true}
+        onClick={this.setDisplay}
         />];
     return (
       <Dialog
